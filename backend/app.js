@@ -44,4 +44,5 @@ const startApplication = () => {
   });
 };
 
+// Launch application
 startApplication();
