@@ -27,6 +27,7 @@ app.use(morgan(":method :url :response-time"));
 // Routes
 app.use(`${process.env.APP_CONTEXT}`, require("./routes/index.routes"));
 app.use(`${process.env.APP_CONTEXT}/admin`, require("./routes/admin.routes"));
+app.use(`${process.env.APP_CONTEXT}/auth`, require("./routes/auth.routes"));
 app.use(`${process.env.APP_CONTEXT}/users`, require("./routes/user.routes"));
 
 // Error handler
@@ -37,9 +38,7 @@ app.use(errorHandler);
 const startApplication = () => {
   mongoose.connectToDB(() => {
     app.listen(process.env.PORT, () =>
-      console.log(
-        `${process.env.APP_NAME} app listening on port ${process.env.PORT}!`
-      )
+      console.log(`${process.env.APP_NAME} app listening on port ${process.env.PORT}!`)
     );
   });
 };

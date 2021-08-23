@@ -59,9 +59,7 @@ exports.createStandardRoles = (req, res, next) => {
             return next(err);
           }
           if (index === Role.standardRoles.length - 1) {
-            const message = addedRoles
-              ? `Successfully added ${addedRoles} role(s)`
-              : "Standard roles already exist";
+            const message = addedRoles ? `Successfully added ${addedRoles} role(s)` : "Standard roles already exist";
             return res.json({ message });
           }
         });
@@ -71,21 +69,16 @@ exports.createStandardRoles = (req, res, next) => {
 };
 
 exports.updateRole = (req, res, next) => {
-  Role.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true },
-    (err, role) => {
-      if (err) {
-        return next(err);
-      }
-      if (!role) {
-        res.sendStatus(404);
-      } else {
-        res.send(role);
-      }
+  Role.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, role) => {
+    if (err) {
+      return next(err);
     }
-  );
+    if (!role) {
+      res.sendStatus(404);
+    } else {
+      res.send(role);
+    }
+  });
 };
 
 exports.deleteRole = (req, res, next) => {
@@ -107,10 +100,7 @@ exports.deleteAllRoles = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    const message =
-      doc.deletedCount > 0
-        ? `Successfully removed ${doc.deletedCount} roles`
-        : "No roles to remove";
+    const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} roles` : "No roles to remove";
     res.json({ message });
   });
 };

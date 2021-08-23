@@ -33,20 +33,15 @@ exports.createUser = (req, res, next) => {
 };
 
 exports.updateUser = (req, res, next) => {
-  User.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true },
-    (err, user) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return res.sendStatus(404);
-      }
-      res.status(200).send(user);
+  User.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, user) => {
+    if (err) {
+      return next(err);
     }
-  );
+    if (!user) {
+      return res.sendStatus(404);
+    }
+    res.status(200).send(user);
+  });
 };
 
 exports.deleteUser = (req, res, next) => {
@@ -67,10 +62,7 @@ exports.deleteAllUsers = (_, res, next) => {
     if (err) {
       return next(err);
     }
-    const message =
-      doc.deletedCount > 0
-        ? `Successfully removed ${doc.deletedCount} users`
-        : "No users to remove";
+    const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} users` : "No users to remove";
     res.json({ message });
   });
 };
