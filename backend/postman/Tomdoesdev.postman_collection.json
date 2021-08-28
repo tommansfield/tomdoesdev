@@ -12,6 +12,28 @@
 					"name": "Roles",
 					"item": [
 						{
+							"name": "createStandardRoles",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/addall",
+									"protocol": "http",
+									"host": [
+										"{{localhost}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{context}}",
+										"admin",
+										"roles",
+										"addall"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "getRoles",
 							"request": {
 								"method": "GET",
@@ -75,50 +97,6 @@
 							"response": []
 						},
 						{
-							"name": "createStandardRoles",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/addall",
-									"protocol": "http",
-									"host": [
-										"{{localhost}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"{{context}}",
-										"admin",
-										"roles",
-										"addall"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "getRoleById",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{adminRoleId}}",
-									"protocol": "http",
-									"host": [
-										"{{localhost}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"{{context}}",
-										"admin",
-										"roles",
-										"{{adminRoleId}}"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "updateRole",
 							"request": {
 								"method": "PATCH",
@@ -150,12 +128,12 @@
 							"response": []
 						},
 						{
-							"name": "getUsersByRoleId",
+							"name": "getRoleById",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{userRoleId}}",
+									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
 									"protocol": "http",
 									"host": [
 										"{{localhost}}"
@@ -165,7 +143,30 @@
 										"{{context}}",
 										"admin",
 										"roles",
-										"{{userRoleId}}"
+										"{{roleId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUsersByRoleId",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{adminRoleId}}/users",
+									"protocol": "http",
+									"host": [
+										"{{localhost}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{context}}",
+										"admin",
+										"roles",
+										"{{adminRoleId}}",
+										"users"
 									]
 								}
 							},
@@ -216,6 +217,135 @@
 							"response": []
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "register",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'));\r",
+									"pm.environment.set(\"email\", pm.variables.replaceIn(\"{{$randomEmail}}\"))"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"matchingPassword\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/register",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{context}}",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"accessToken\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/login",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{context}}",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/user",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{context}}",
+								"auth",
+								"user"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -272,7 +402,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"hash\": \"{{$randomPassword}}{{$randomPassword}}\",\r\n    \"salt\": \"{{$randomPassword}}\",\r\n    \"provider\": \"Local\",\r\n    \"profile\": {\r\n        \"firstName\": \"Thomas\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"hash\": \"{{$randomPassword}}{{$randomPassword}}\",\r\n    \"salt\": \"{{$randomPassword}}\",\r\n    \"profile\": {\r\n        \"firstName\": \"Thomas\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -322,7 +452,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"tommansfield\"\r\n}",
+							"raw": "{\r\n        \"lastLogin\": \"2021-08-23T14:07:40.600Z\",\r\n        \"emailVerified\": false,\r\n        \"settings\": {\r\n            \"sendEmails\": false\r\n        },\r\n        \"profile\": {\r\n            \"happy\": true,\r\n            \"firstName\": \"Thomas\"\r\n        },\r\n        \"_id\": \"{{userId}}\",\r\n        \"email\": \"admin@tomdoesdev.com\",\r\n        \"hash\": \"tTxrr7JCrpZPdvifhmKJYBUa0naYuC\",\r\n        \"salt\": \"jHfDBNljR1xEn9B\",\r\n        \"provider\": \"Local\",\r\n        \"roles\": [\r\n            {\r\n                \"_id\": \"6120f9e95fe7c26cb4c26d1a\",\r\n                \"name\": \"User\",\r\n                \"description\": \"Standard user\"\r\n            },\r\n            {\r\n                \"name\": \"Gaylord\",\r\n                \"description\":\" Right bummer\"\r\n            },\r\n            {\r\n        \"_id\": \"6120f9e95fe7c26cb4c26d1b\",\r\n        \"name\": \"Admin\",\r\n        \"description\": \"Administator\"\r\n    }\r\n        ],\r\n        \"createdAt\": \"2021-08-23T14:34:40.858Z\",\r\n        \"updatedAt\": \"2021-08-23T14:35:10.095Z\"\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -407,26 +537,12 @@
 				}
 			},
 			"response": []
-		},
+		}
+	],
+	"variable": [
 		{
-			"name": "Test",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://{{localhost}}:{{port}}/{{context}}/test",
-					"protocol": "http",
-					"host": [
-						"{{localhost}}"
-					],
-					"port": "{{port}}",
-					"path": [
-						"{{context}}",
-						"test"
-					]
-				}
-			},
-			"response": []
+			"key": "password",
+			"value": ""
 		}
 	]
 }

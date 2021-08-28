@@ -66,7 +66,7 @@ module.exports.deleteAllUsers = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} users` : "No users to remove";
+    const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} users.` : "No users to remove.";
     res.json({ message });
   });
 };

@@ -31,10 +31,10 @@ module.exports.issueJWT = function (user) {
   const privateKeyPath = path.join(__dirname, "..", keys.privateKey);
   const PRIV_KEY = fs.readFileSync(privateKeyPath);
 
-  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn, algorithm: "RS256" });
+  const token = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn, algorithm: "RS256" });
 
   return {
-    token: `Bearer ${signedToken}`,
+    token: token,
     expiresIn,
   };
 };

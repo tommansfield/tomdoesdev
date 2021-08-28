@@ -9,13 +9,13 @@ const keys = require("./keys");
 const publicKeyPath = path.join(__dirname, "..", keys.publicKey);
 const PUB_KEY = fs.readFileSync(publicKeyPath, "utf8");
 
-const options = {
+const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: PUB_KEY,
   algorithms: ["RS256"],
 };
 
-const jwtStrategy = new JwtStrategy(options, (payload, done) => {
+const jwtStrategy = new JwtStrategy(jwtOptions, (payload, done) => {
   User.findById({ _id: payload.sub }, (err, user) => {
     if (err) {
       return done(err, false);
