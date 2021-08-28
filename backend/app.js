@@ -4,17 +4,17 @@
 const express = require("express");
 const app = express();
 
+// Environmental variables
+const dotenv = require("dotenv");
+const dotenvExpand = require("dotenv-expand");
+dotenvExpand(dotenv.config());
+
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Mongoose
 const mongoose = require("./config/mongoose.js");
-
-// Environmental variables
-const dotenv = require("dotenv");
-const dotenvExpand = require("dotenv-expand");
-dotenvExpand(dotenv.config());
 
 // Favicon
 const serveFavicon = require("serve-favicon");
