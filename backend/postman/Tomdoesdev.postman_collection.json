@@ -293,6 +293,48 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
+							"raw": "{ \r\n    \"email\": \"admin@tomdoesdev.com\",\r\n    \"password\": \"812019583a2ad8de5762c195a3d6f50f.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/login",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{context}}",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "adminLogin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"accessToken\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
 							"raw": "{ \r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
 							"options": {
 								"raw": {

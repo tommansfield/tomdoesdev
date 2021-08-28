@@ -5,7 +5,7 @@ const path = require("path");
 const keys = require("../config/keys");
 
 module.exports.generatePassword = function () {
-  return crypto.randomBytes(32).toString("hex");
+  return crypto.randomBytes(16).toString("hex");
 };
 
 module.exports.generateSaltAndHash = function (password) {
