@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var provider = require("../../util/enums").provider;
+var Provider = require("../../util/enums").provider;
 var Profile = require("./profile");
 var Role = require("./role");
 var Settings = require("./settings");
@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     provider: {
-      type: provider,
+      type: String,
+      enum: Provider,
       required: true,
     },
     lastLogin: {
@@ -58,5 +59,22 @@ const UserSchema = new mongoose.Schema(
 );
 
 const User = mongoose.model("User", UserSchema);
+
+// Admin user (DEV)
+User.adminUser = new User({
+  _id: new mongoose.mongo.ObjectId("6120f9e95fe7c26cb4c26d1c"),
+  email: `admin@${process.env.APP_NAME.toLocaleLowerCase()}.com`,
+  hash: "",
+  salt: "",
+  roles: [Role.ADMIN, Role.USER],
+  profile: {
+    firstName: "Admin",
+    lastName: "Administrator",
+  },
+  settings: {
+    sendEmails: true,
+  },
+  provider: Provider.ADMIN,
+});
 
 module.exports = User;

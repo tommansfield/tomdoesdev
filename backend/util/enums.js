@@ -1,3 +1,8 @@
+const environment = {
+  DEV: "Development",
+  PROD: "Production",
+};
+
 const provider = {
   ADMIN: "Admin",
   LOCAL: "Local",
@@ -8,4 +13,4 @@ const provider = {
   TWITTER: "Twitter",
 };
 
-module.exports = { provider };
+module.exports = { environment, provider };

@@ -1,4 +1,5 @@
-const User = require("../models/user/user");
+const User = require("mongoose").model("User");
+const utils = require("../util/utils");
 const provider = require("../util/enums").provider;
 
 exports.getUsers = (_, res) => {
@@ -66,5 +67,27 @@ exports.deleteAllUsers = (_, res, next) => {
     }
     const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} users` : "No users to remove";
     res.json({ message });
+  });
+};
+
+exports.createAdminUser = (next) => {
+  const adminUser = User.adminUser;
+  User.findByIdAndUpdate(adminUser._id, adminUser, (err, user) => {
+    const password = utils.createPassword(32);
+    if (!user) {
+      user = adminUser;
+      user.isNew = true;
+    }
+    // TODO: hash password
+    user.hash = password;
+    user.salt = "salt here";
+    const action = user.isNew ? "created" : "updated";
+    user.save((err, newUser) => {
+      const message = err
+        ? err.message
+        : `successfully ${action} admin user... email: ${user.email}, password: ${password}.`;
+      console.log(`-- Adding admin user -> ${message}`);
+      next();
+    });
   });
 };

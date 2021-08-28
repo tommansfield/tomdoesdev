@@ -12,20 +12,45 @@ const db = {
 
 const url = `${db.type}://${db.user}:${db.pass}@${db.host}/${db.name.toLocaleLowerCase()}${db.opts}`;
 
-exports.connectToDB = (callback) => {
+exports.connectToDB = (done) => {
   mongoose
     .connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
     })
     .then(async () => {
       console.log("Connected to MongoDB successfully..");
-      callback();
+      initializeDB(() => done());
     })
     .catch((e) => {
       console.error("Error while attemping to connect to MongoDB");
       console.error(e);
     });
+};
+
+const initializeDB = (done) => {
+  console.log("Initializing database...");
+  // Add admin user (dev only)
+  initializeUsers(() => {
+    initializeRoles(done);
+  });
+};
+
+const initializeUsers = (done) => {
+  if (process.env.ENV === "development") {
+    const userService = require("../services/user.service");
+    userService.createAdminUser(() => {
+      // Add standard roles
+      done();
+    });
+  } else {
+    done();
+  }
+};
+
+const initializeRoles = (done) => {
+  const roleService = require("../services/role.service");
+  roleService.createStandardRoles(null, null, () => {
+    done();
+  });
 };

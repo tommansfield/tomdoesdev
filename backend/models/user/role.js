@@ -22,11 +22,13 @@ Role.ADMIN = new Role({
   name: "Admin",
   description: "Administator",
 });
+
 Role.USER = new Role({
   _id: new mongoose.mongo.ObjectId("6120f9e95fe7c26cb4c26d1a"),
   name: "User",
   description: "Standard user",
 });
+
 Role.standardRoles = [Role.USER, Role.ADMIN];
 
 module.exports = Role;

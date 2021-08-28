@@ -1,5 +1,5 @@
-const Role = require("../models/user/role");
-const User = require("../models/user/user");
+const Role = require("mongoose").model("Role");
+const User = require("mongoose").model("User");
 
 exports.getRoles = (req, res, next) => {
   Role.find({}, (err, roles) => {
@@ -52,6 +52,7 @@ exports.createStandardRoles = (req, res, next) => {
         }
         if (!role) {
           role = standardRole;
+          role.isNew = true;
           addedRoles++;
         }
         role.save((err, role) => {
@@ -59,8 +60,14 @@ exports.createStandardRoles = (req, res, next) => {
             return next(err);
           }
           if (index === Role.standardRoles.length - 1) {
-            const message = addedRoles ? `Successfully added ${addedRoles} role(s)` : "Standard roles already exist";
-            return res.json({ message });
+            const result = addedRoles ? `successfully added ${addedRoles} role(s).` : "Standard roles already exist.";
+            const message = err ? err.message : result;
+            if (res) {
+              return res.json({ message });
+            } else {
+              console.log(`-- Adding standard roles -> ${message}`);
+              next();
+            }
           }
         });
       });
