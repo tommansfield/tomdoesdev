@@ -2,6 +2,11 @@ var mongoose = require("mongoose");
 
 var SettingsSchema = new mongoose.Schema(
   {
+    rememberMe: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
     sendEmails: {
       type: Boolean,
       required: true,

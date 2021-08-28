@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: Provider,
       required: true,
+      default: Provider.LOCAL,
     },
     lastLogin: {
       type: Date,

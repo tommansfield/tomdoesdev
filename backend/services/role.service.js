@@ -1,7 +1,7 @@
 const Role = require("mongoose").model("Role");
 const User = require("mongoose").model("User");
 
-exports.getRoles = (req, res, next) => {
+module.exports.getRoles = (req, res, next) => {
   Role.find({}, (err, roles) => {
     if (err) {
       return next(err);
@@ -10,7 +10,7 @@ exports.getRoles = (req, res, next) => {
   });
 };
 
-exports.getRoleById = (req, res, next) => {
+module.exports.getRoleById = (req, res, next) => {
   Role.findById(req.params.id, (err, role) => {
     if (err) {
       return next(err);
@@ -22,7 +22,7 @@ exports.getRoleById = (req, res, next) => {
   });
 };
 
-exports.getUsersByRoleId = (req, res, next) => {
+module.exports.getUsersByRoleId = (req, res, next) => {
   console.log(req.params.id);
   User.find({ "roles._id": req.params.id }, (err, users) => {
     if (err) {
@@ -32,7 +32,7 @@ exports.getUsersByRoleId = (req, res, next) => {
   });
 };
 
-exports.createRole = (req, res, next) => {
+module.exports.createRole = (req, res, next) => {
   const role = new Role(req.body);
   role.save((err, role) => {
     if (err) {
@@ -42,7 +42,7 @@ exports.createRole = (req, res, next) => {
   });
 };
 
-exports.updateRole = (req, res, next) => {
+module.exports.updateRole = (req, res, next) => {
   Role.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, role) => {
     if (err) {
       return next(err);
@@ -55,7 +55,7 @@ exports.updateRole = (req, res, next) => {
   });
 };
 
-exports.deleteRole = (req, res, next) => {
+module.exports.deleteRole = (req, res, next) => {
   Role.findByIdAndRemove(req.params.id, (err, role) => {
     console.log(role);
     if (err) {
@@ -69,7 +69,7 @@ exports.deleteRole = (req, res, next) => {
   });
 };
 
-exports.deleteAllRoles = (req, res, next) => {
+module.exports.deleteAllRoles = (req, res, next) => {
   Role.deleteMany({}, (err, doc) => {
     if (err) {
       return next(err);
@@ -79,7 +79,7 @@ exports.deleteAllRoles = (req, res, next) => {
   });
 };
 
-exports.createStandardRoles = (req, res, next) => {
+module.exports.createStandardRoles = (req, res, next) => {
   if (Role.standardRoles.length) {
     let addedRoles = 0;
     Role.standardRoles.some((standardRole, index) => {

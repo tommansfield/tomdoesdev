@@ -24,8 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 const keypair = require("./auth/keypair");
 
 // Authentication
-const passport = require("passport");
-require("./config/passport")(passport);
+const passport = require("./config/passport");
 app.use(passport.initialize());
 
 // Cors
@@ -38,7 +37,7 @@ app.use(serveFavicon(__dirname + "/public/favicon.ico"));
 
 // Logger
 const morgan = require("morgan");
-app.use(morgan(":date :method :url :response-time for :remote-addr"));
+app.use(morgan(":date: HTTP :method -> :url -> :response-time -> :remote-addr"));
 
 // Routes
 app.use(`${process.env.APP_CONTEXT}`, require("./routes/index.routes"));

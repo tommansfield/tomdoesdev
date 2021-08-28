@@ -1,13 +1,13 @@
 const Constants = require("../util/constants");
-const Role = require("mongoose").model("Role");
 const User = require("mongoose").model("User");
 const provider = require("../util/enums").provider;
+const authUtils = require("../auth/auth-utils");
 
-exports.login = (req, res, next) => {
+module.exports.login = (req, res, next) => {
   res.send("logged in");
 };
 
-exports.register = (req, res, next) => {
+module.exports.register = (req, res, next) => {
   const errors = validateRegistration(req.body);
   if (errors.length) {
     return res.status(400).json({ errors });
@@ -26,12 +26,26 @@ exports.register = (req, res, next) => {
         }
       }
       return res.status(400).json({ error });
+    } else {
+      const saltHash = authUtils.generateSaltAndHash(req.body.password);
+      const user = new User({
+        email: req.body.email,
+        hash: saltHash.hash,
+        salt: saltHash.salt,
+      });
+      user.save((err, newUser) => {
+        if (err) {
+          return next(err);
+        }
+        const signedJWT = authUtils.issueJWT(user);
+        console.log(`Successfully created new user for email address: ${newUser.email}.`);
+        res.json({ success: true, user: newUser, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
+      });
     }
-    res.send("registered");
   });
 };
 
-const validateRegistration = (request) => {
+validateRegistration = function (request) {
   const errors = [];
   if (!request.email) {
     errors.push("Please enter an email address.");

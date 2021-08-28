@@ -1,10 +1,11 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const keys = require("../config/keys");
 
-exports.generateKeyPair = (done) => {
-  const privateKeyPath = path.join(__dirname, "..", "id_rsa_priv.pem");
-  const publicKeyPath = path.join(__dirname, "..", "id_rsa_pub.pem");
+module.exports.generateKeyPair = (done) => {
+  const privateKeyPath = path.join(__dirname, "..", keys.privateKey);
+  const publicKeyPath = path.join(__dirname, "..", keys.publicKey);
   let message = "Checking for public/private keypair..";
   try {
     if (fs.existsSync(privateKeyPath) && fs.existsSync(publicKeyPath)) {
