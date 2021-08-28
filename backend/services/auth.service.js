@@ -1,6 +1,6 @@
 const Constants = require("../util/constants");
-const Role = require("../models/user/role");
-const User = require("../models/user/user");
+const Role = require("mongoose").model("Role");
+const User = require("mongoose").model("User");
 const provider = require("../util/enums").provider;
 
 exports.login = (req, res, next) => {
@@ -16,9 +16,7 @@ exports.register = (req, res, next) => {
     if (err) {
       next(err);
     }
-
     if (user) {
-      console.log(user);
       let error = "Email address already registered.";
       if (provider.LOCAL.localeCompare(user.provider) !== 0) {
         if (provider.ADMIN.localeCompare(user.provider) === 0) {

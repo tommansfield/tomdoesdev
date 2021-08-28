@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const keys = require("../config/keys");
+const environment = require("../util/enums").environment;
 
 const db = {
   type: process.env.DATABASE_TYPE,
   name: process.env.DATABASE_NAME,
-  host: process.env.DATABASE_HOST,
   opts: process.env.DATABASE_OPTIONS,
+  host: keys.database.url,
   user: keys.database.username,
   pass: keys.database.password,
 };
@@ -29,7 +30,7 @@ exports.connectToDB = (done) => {
 };
 
 const initializeDB = (done) => {
-  console.log("Initializing database...");
+  console.log("Initializing database..");
   // Add admin user (dev only)
   initializeUsers(() => {
     initializeRoles(done);
@@ -37,7 +38,7 @@ const initializeDB = (done) => {
 };
 
 const initializeUsers = (done) => {
-  if (process.env.ENV === "development") {
+  if (process.env.ENV === environment.DEV) {
     const userService = require("../services/user.service");
     userService.createAdminUser(() => {
       // Add standard roles

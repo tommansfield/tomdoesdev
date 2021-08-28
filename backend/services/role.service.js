@@ -42,39 +42,6 @@ exports.createRole = (req, res, next) => {
   });
 };
 
-exports.createStandardRoles = (req, res, next) => {
-  if (Role.standardRoles.length) {
-    let addedRoles = 0;
-    Role.standardRoles.some((standardRole, index) => {
-      Role.findByIdAndUpdate(standardRole._id, standardRole, (err, role) => {
-        if (err) {
-          return next(err);
-        }
-        if (!role) {
-          role = standardRole;
-          role.isNew = true;
-          addedRoles++;
-        }
-        role.save((err, role) => {
-          if (err) {
-            return next(err);
-          }
-          if (index === Role.standardRoles.length - 1) {
-            const result = addedRoles ? `successfully added ${addedRoles} role(s).` : "Standard roles already exist.";
-            const message = err ? err.message : result;
-            if (res) {
-              return res.json({ message });
-            } else {
-              console.log(`-- Adding standard roles -> ${message}`);
-              next();
-            }
-          }
-        });
-      });
-    });
-  }
-};
-
 exports.updateRole = (req, res, next) => {
   Role.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, role) => {
     if (err) {
@@ -110,4 +77,37 @@ exports.deleteAllRoles = (req, res, next) => {
     const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} roles` : "No roles to remove";
     res.json({ message });
   });
+};
+
+exports.createStandardRoles = (req, res, next) => {
+  if (Role.standardRoles.length) {
+    let addedRoles = 0;
+    Role.standardRoles.some((standardRole, index) => {
+      Role.findByIdAndUpdate(standardRole._id, standardRole, (err, role) => {
+        if (err) {
+          return next(err);
+        }
+        if (!role) {
+          role = standardRole;
+          role.isNew = true;
+          addedRoles++;
+        }
+        role.save((err, role) => {
+          if (err) {
+            return next(err);
+          }
+          if (index === Role.standardRoles.length - 1) {
+            const result = addedRoles ? `successfully added ${addedRoles} role(s).` : "standard roles already exist.";
+            const message = err ? err.message : result;
+            if (res) {
+              return res.json({ message });
+            } else {
+              console.log(`-- Adding standard roles -> ${message}`);
+              next();
+            }
+          }
+        });
+      });
+    });
+  }
 };
