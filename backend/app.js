@@ -8,8 +8,8 @@ const app = express();
 const dotenv = require("dotenv");
 const dotenvExpand = require("dotenv-expand");
 dotenvExpand(dotenv.config());
-const environment = require("./util/enums");
-const env = process.ENV || environment.DEV;
+const environment = require("./util/enums").environment;
+const env = process.env.ENV || environment.DEV;
 
 // Body parser
 app.use(express.json());
@@ -40,7 +40,7 @@ app.use(errorHandler);
 function startApplication() {
   mongoose.connectToDB(() => {
     app.listen(process.env.PORT, () => {
-      console.log(`${process.env.APP_NAME} app listening on port ${process.env.PORT}! (environment: ${env})`);
+      console.log(`${process.env.APP_NAME} app listening on port ${process.env.PORT}! [environment: ${env}]`);
     });
   });
 }

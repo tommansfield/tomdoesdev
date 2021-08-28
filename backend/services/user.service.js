@@ -60,7 +60,7 @@ exports.deleteUser = (req, res, next) => {
   });
 };
 
-exports.deleteAllUsers = (_, res, next) => {
+exports.deleteAllUsers = (req, res, next) => {
   User.deleteMany({}, (err, doc) => {
     if (err) {
       return next(err);

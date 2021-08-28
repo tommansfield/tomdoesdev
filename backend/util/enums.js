@@ -1,6 +1,6 @@
 const environment = {
-  DEV: "Development",
-  PROD: "Production",
+  DEV: "development",
+  PROD: "production",
 };
 
 const provider = {
