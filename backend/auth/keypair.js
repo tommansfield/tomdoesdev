@@ -1,16 +1,18 @@
 const crypto = require("crypto");
 const fs = require("fs");
+const path = require("path");
 
 exports.generateKeyPair = (done) => {
-  const privateKeyPath = `${__dirname}/keys/id_rsa_priv.pem`;
-  const publicKeyPath = `${__dirname}/keys/id_rsa_pub.pem`;
+  const privateKeyPath = path.join(__dirname, "..", "id_rsa_priv.pem");
+  const publicKeyPath = path.join(__dirname, "..", "id_rsa_pub.pem");
   let message = "Checking for public/private keypair..";
   try {
     if (fs.existsSync(privateKeyPath) && fs.existsSync(publicKeyPath)) {
       console.log(`${message} keys found.`);
+      done();
     } else {
       console.log(`${message} no keys found.`);
-      message = "Creating public/private keypair..";
+      message = "-- Creating new public/private keypair..";
       const keyPair = crypto.generateKeyPairSync("rsa", {
         modulusLength: 4096,
         publicKeyEncoding: {
@@ -22,12 +24,14 @@ exports.generateKeyPair = (done) => {
           format: "pem",
         },
       });
-      fs.writeFileSync(privateKeyPath, keyPair.privateKey);
-      fs.writeFileSync(publicKeyPath, keyPair.publicKey);
-      console.log(`${message} done.`);
-      done();
+      fs.writeFile(privateKeyPath, keyPair.privateKey, () => {
+        fs.writeFile(publicKeyPath, keyPair.publicKey, () => {
+          console.log(`${message} done.`);
+          done();
+        });
+      });
     }
   } catch (err) {
-    console.log(`${message} ERROR: ${err.message}`);
+    console.log(`${message} ${err.message}`);
   }
 };

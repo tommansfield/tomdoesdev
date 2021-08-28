@@ -13,15 +13,24 @@ dotenvExpand(dotenv.config());
 const environment = require("./util/enums").environment;
 const env = process.env.ENV || environment.DEV;
 
-// Mongoose
-const mongoose = require("./config/mongoose.js");
-
-// Public and private keypair creator
-const keypair = require("./auth/keypair");
+// MongoDB
+const mongoose = require("./config/mongoose");
 
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Public and private keypair creator
+const keypair = require("./auth/keypair");
+
+// Authentication
+const passport = require("passport");
+require("./config/passport")(passport);
+app.use(passport.initialize());
+
+// Cors
+const cors = require("cors");
+app.use(cors());
 
 // Favicon
 const serveFavicon = require("serve-favicon");
@@ -29,7 +38,7 @@ app.use(serveFavicon(__dirname + "/public/favicon.ico"));
 
 // Logger
 const morgan = require("morgan");
-app.use(morgan(":method :url :response-time"));
+app.use(morgan(":date :method :url :response-time for :remote-addr"));
 
 // Routes
 app.use(`${process.env.APP_CONTEXT}`, require("./routes/index.routes"));
@@ -43,7 +52,8 @@ app.use(errorHandler);
 
 // Application startup
 function startApplication() {
-  console.log(`Starting application -> environment: ${env}.`);
+  console.log(`Starting application..`);
+  console.log(`Environment: ${env}.`);
   keypair.generateKeyPair(() => {
     mongoose.connectToDB(() => {
       app.listen(process.env.PORT, () => {

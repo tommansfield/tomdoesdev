@@ -83,7 +83,7 @@ exports.createAdminUser = (next) => {
     user.salt = "salt here";
     const action = user.isNew ? "created" : "updated";
     user.save((err, newUser) => {
-      const message = err ? err.message : `successfully ${action} admin user..`;
+      const message = err ? err.message : `successfully ${action} admin user.`;
       console.log(`-- Adding admin user -> ${message}`);
       console.log(`-- email: ${user.email}, password: ${password}.`);
       next();

@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 const keys = require("../config/keys");
 const environment = require("../util/enums").environment;
 
+// Register models
+require("../models/user/role");
+require("../models/user/user");
+
 const db = {
   type: process.env.DATABASE_TYPE,
   name: process.env.DATABASE_NAME,
@@ -14,33 +18,34 @@ const db = {
 const url = `${db.type}://${db.user}:${db.pass}@${db.host}/${db.name.toLocaleLowerCase()}${db.opts}`;
 
 exports.connectToDB = (done) => {
+  let message = "Connecting to MongoDB..";
   mongoose
     .connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
     .then(async () => {
-      console.log("Connected to MongoDB successfully..");
+      console.log(`${message} done.`);
       initializeDB(() => done());
     })
-    .catch((e) => {
-      console.error(`Error while attemping to connect to MongoDB: ${err.message}`);
+    .catch((err) => {
+      console.error(message);
+      console.error(err);
     });
 };
 
 const initializeDB = (done) => {
   console.log("Initializing database..");
-  // Add admin user (dev only)
   initializeUsers(() => {
     initializeRoles(done);
   });
 };
 
 const initializeUsers = (done) => {
+  // Add admin user (dev only)
   if (process.env.ENV === environment.DEV) {
     const userService = require("../services/user.service");
     userService.createAdminUser(() => {
-      // Add standard roles
       done();
     });
   } else {
@@ -49,6 +54,7 @@ const initializeUsers = (done) => {
 };
 
 const initializeRoles = (done) => {
+  // Add standard roles
   const roleService = require("../services/role.service");
   roleService.createStandardRoles(null, null, () => {
     done();
