@@ -25,6 +25,7 @@ exports.generateKeyPair = (done) => {
       fs.writeFileSync(privateKeyPath, keyPair.privateKey);
       fs.writeFileSync(publicKeyPath, keyPair.publicKey);
       console.log(`${message} done.`);
+      done();
     }
   } catch (err) {
     console.log(`${message} ERROR: ${err.message}`);

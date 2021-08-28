@@ -44,10 +44,11 @@ app.use(errorHandler);
 // Application startup
 function startApplication() {
   console.log(`Starting application -> environment: ${env}.`);
-  keypair.generateKeyPair();
-  mongoose.connectToDB(() => {
-    app.listen(process.env.PORT, () => {
-      console.log(`${process.env.APP_NAME} app listening on port ${process.env.PORT}!`);
+  keypair.generateKeyPair(() => {
+    mongoose.connectToDB(() => {
+      app.listen(process.env.PORT, () => {
+        console.log(`${process.env.APP_NAME} app listening on port ${process.env.PORT}!`);
+      });
     });
   });
 }

@@ -24,8 +24,7 @@ exports.connectToDB = (done) => {
       initializeDB(() => done());
     })
     .catch((e) => {
-      console.error("Error while attemping to connect to MongoDB");
-      console.error(e);
+      console.error(`Error while attemping to connect to MongoDB: ${err.message}`);
     });
 };
 
