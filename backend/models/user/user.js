@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var provider = require("../enums").provider;
+var provider = require("../../util/enums").provider;
 var Profile = require("./profile");
 var Role = require("./role");
 var Settings = require("./settings");

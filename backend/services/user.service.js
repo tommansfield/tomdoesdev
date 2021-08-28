@@ -1,4 +1,5 @@
 const User = require("../models/user/user");
+const provider = require("../util/enums").provider;
 
 exports.getUsers = (_, res) => {
   User.find({}, (err, users) => {
@@ -24,6 +25,7 @@ exports.getUserById = (req, res) => {
 
 exports.createUser = (req, res, next) => {
   const user = new User(req.body);
+  user.provider = provider.ADMIN;
   user.save((err, user) => {
     if (err) {
       return next(err);

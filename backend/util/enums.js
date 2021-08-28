@@ -1,9 +1,10 @@
 const provider = {
+  ADMIN: "Admin",
   LOCAL: "Local",
   FACEBOOK: "Facebook",
   GOOGLE: "Google",
   MICROSOFT: "Microsoft",
-  GITHUB: "GITHUB",
+  GITHUB: "Github",
   TWITTER: "Twitter",
 };
 
