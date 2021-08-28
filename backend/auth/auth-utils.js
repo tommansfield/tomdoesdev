@@ -4,8 +4,11 @@ const fs = require("fs");
 const path = require("path");
 const keys = require("../config/keys");
 
+const privateKeyPath = path.join(__dirname, "..", keys.privateKey);
+const PRIV_KEY = fs.readFileSync(privateKeyPath);
+
 module.exports.generatePassword = function () {
-  return crypto.randomBytes(16).toString("hex");
+  return crypto.randomBytes(32).toString("hex");
 };
 
 module.exports.generateSaltAndHash = function (password) {
@@ -22,19 +25,7 @@ module.exports.validPassword = function (password, hash, salt) {
 module.exports.issueJWT = function (user) {
   const _id = user._id;
   const expiresIn = user.settings.rememberMe ? "1y" : "6h";
-
-  const payload = {
-    sub: _id,
-    iat: Date.now(),
-  };
-
-  const privateKeyPath = path.join(__dirname, "..", keys.privateKey);
-  const PRIV_KEY = fs.readFileSync(privateKeyPath);
-
+  const payload = { sub: _id, iat: Date.now() };
   const token = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn, algorithm: "RS256" });
-
-  return {
-    token: token,
-    expiresIn,
-  };
+  return { token, expiresIn };
 };

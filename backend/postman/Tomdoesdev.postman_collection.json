@@ -293,7 +293,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \r\n    \"email\": \"admin@tomdoesdev.com\",\r\n    \"password\": \"812019583a2ad8de5762c195a3d6f50f.\"\r\n}",
+							"raw": "{ \r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -335,7 +335,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"raw": "{ \r\n    \"email\": \"admin@tomdoesdev.com\",\r\n    \"password\": \"812019583a2ad8de5762c195a3d6f50f\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

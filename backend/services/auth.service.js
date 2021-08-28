@@ -79,8 +79,8 @@ validateLogin = function (request) {
     errors.push("Please enter a password.");
   } else if (request.password.length < 8) {
     errors.push("Password should be at least 8 characters.");
-  } else if (request.password.length > 32) {
-    errors.push("Password length should not exceed 32 characters.");
+  } else if (request.password.length > 64) {
+    errors.push("Password length should not exceed 64 characters.");
   }
   return errors;
 };
@@ -96,8 +96,8 @@ validateRegistration = function (request) {
     errors.push("Please enter a password.");
   } else if (request.password.length < 8) {
     errors.push("Password should be at least 8 characters.");
-  } else if (request.password.length > 32) {
-    errors.push("Password length should not exceed 32 characters.");
+  } else if (request.password.length > 64) {
+    errors.push("Password length should not exceed 64 characters.");
   } else if (!Constants.validation.lowerCaseLetters.test(request.password)) {
     errors.push("Password should contain at least one lowercase letter.");
   } else if (!Constants.validation.upperCaseLetters.test(request.password)) {

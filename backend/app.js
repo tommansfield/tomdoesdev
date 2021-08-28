@@ -20,7 +20,7 @@ const mongoose = require("./config/mongoose");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Public and private keypair creator
+// Keypair creator
 const keypair = require("./auth/keypair");
 
 // Authentication
@@ -33,7 +33,7 @@ app.use(cors());
 
 // Favicon
 const serveFavicon = require("serve-favicon");
-app.use(serveFavicon(__dirname + "/public/favicon.ico"));
+app.use(serveFavicon(`${__dirname}/public/favicon.ico`));
 
 // Logger
 const morgan = require("morgan");
