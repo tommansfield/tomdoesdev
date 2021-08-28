@@ -43,7 +43,7 @@ app.use(errorHandler);
 
 // Application startup
 function startApplication() {
-  console.log(`Starting application -> environment: ${env}..`);
+  console.log(`Starting application -> environment: ${env}.`);
   keypair.generateKeyPair();
   mongoose.connectToDB(() => {
     app.listen(process.env.PORT, () => {
