@@ -13,38 +13,44 @@ module.exports.getUsers = (_, res) => {
   });
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.id, (err, user) => {
     if (err) {
       return next(err);
     }
     if (!user) {
-      return res.sendStatus(404);
+      const error = `No user found with id: ${req.params.id}`;
+      return res.status(404).json({ error });
     }
     res.send(user);
   });
 };
 
 module.exports.createUser = (req, res, next) => {
-  const user = new User(req.body);
-  user.provider = provider.ADMIN;
-  user.save((err, user) => {
-    if (err) {
-      return next(err);
-    }
-    res.status(201).send(user);
+  existsByEmail(req, res, () => {
+    const user = new User(req.body);
+    user.provider = provider.ADMIN;
+    user.save((err, user) => {
+      if (err) {
+        return next(err);
+      }
+      res.status(201).send(user);
+    });
   });
 };
 
 module.exports.updateUser = (req, res, next) => {
-  User.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, user) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.sendStatus(404);
-    }
-    res.status(200).send(user);
+  existsByEmail(req, res, () => {
+    User.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, user) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        const error = `No user found with id: ${req.params.id}`;
+        return res.status(404).json({ error });
+      }
+      res.status(200).send(user);
+    });
   });
 };
 
@@ -54,10 +60,11 @@ module.exports.deleteUser = (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      return res.sendStatus(404);
+      const error = `No user found with id: ${req.params.id}`;
+      return res.status(404).json({ error });
     }
     user.remove();
-    res.send(user);
+    res.user(user);
   });
 };
 
@@ -67,7 +74,7 @@ module.exports.deleteAllUsers = (req, res, next) => {
       return next(err);
     }
     const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} users.` : "No users to remove.";
-    res.json({ message });
+    res.json({ success: true, message });
   });
 };
 
@@ -90,8 +97,24 @@ module.exports.createAdminUser = (next) => {
     user.save((err, newUser) => {
       const message = err ? err.message : `successfully ${action} admin user.`;
       console.log(`-- Adding admin user -> ${message}`);
-      console.log(`-- email: ${user.email}, password: ${password}.`);
+      console.log(`-- email: ${newUser.email}, password: ${password}.`);
       next();
     });
+  });
+};
+
+module.exports.existsByEmail = (req, res, next) => {
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (user && user._id !== req.body._id) {
+      let error = "Email address already registered";
+      if (provider.LOCAL.localeCompare(user.provider) === 0 || provider.ADMIN.localeCompare(user.provider) === 0) {
+        error = `${error}.`;
+      } else {
+        error = `${error} using ${user.provider}`;
+      }
+      return res.status(400).json({ error });
+    }
+    console.log("not exist");
+    next();
   });
 };

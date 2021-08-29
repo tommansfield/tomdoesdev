@@ -13,13 +13,9 @@ const UserSchema = new mongoose.Schema(
     },
     hash: {
       type: String,
-      unique: true,
-      required: true,
     },
     salt: {
       type: String,
-      unique: true,
-      required: true,
     },
     provider: {
       type: String,
@@ -29,16 +25,14 @@ const UserSchema = new mongoose.Schema(
     },
     lastLogin: {
       type: Date,
-      required: true,
-      default: Date.now(),
+    },
+    photoUrl: {
+      type: String,
     },
     emailVerified: {
       type: Boolean,
       required: true,
       default: false,
-    },
-    photoUrl: {
-      type: String,
     },
     roles: {
       type: [Role.Schema],

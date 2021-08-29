@@ -73,7 +73,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\": \"{{$randomJobTitle}}\",\r\n    \"description\": \"{{$randomLoremSentence}}\"   \r\n}",
+									"raw": "{\r\n    \"name\": \"az\",\r\n    \"description\": \"az\"   \r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -230,7 +230,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'));\r",
+									"pm.environment.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}1'));\r",
 									"pm.environment.set(\"email\", pm.variables.replaceIn(\"{{$randomEmail}}\"))"
 								],
 								"type": "text/javascript"
@@ -335,7 +335,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \r\n    \"email\": \"admin@tomdoesdev.com\",\r\n    \"password\": \"812019583a2ad8de5762c195a3d6f50f\"\r\n}",
+							"raw": "{ \r\n    \"email\": \"admin@tomdoesdev.com\",\r\n    \"password\": \"bc8e04a6b09150c871545012ccd59c08c03489a9e78678e692cf84a62053cc9b\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -494,7 +494,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"lastLogin\": \"2021-08-23T14:07:40.600Z\",\r\n        \"emailVerified\": false,\r\n        \"settings\": {\r\n            \"sendEmails\": false\r\n        },\r\n        \"profile\": {\r\n            \"happy\": true,\r\n            \"firstName\": \"Thomas\"\r\n        },\r\n        \"_id\": \"{{userId}}\",\r\n        \"email\": \"admin@tomdoesdev.com\",\r\n        \"hash\": \"tTxrr7JCrpZPdvifhmKJYBUa0naYuC\",\r\n        \"salt\": \"jHfDBNljR1xEn9B\",\r\n        \"provider\": \"Local\",\r\n        \"roles\": [\r\n            {\r\n                \"_id\": \"6120f9e95fe7c26cb4c26d1a\",\r\n                \"name\": \"User\",\r\n                \"description\": \"Standard user\"\r\n            },\r\n            {\r\n                \"name\": \"Gaylord\",\r\n                \"description\":\" Right bummer\"\r\n            },\r\n            {\r\n        \"_id\": \"6120f9e95fe7c26cb4c26d1b\",\r\n        \"name\": \"Admin\",\r\n        \"description\": \"Administator\"\r\n    }\r\n        ],\r\n        \"createdAt\": \"2021-08-23T14:34:40.858Z\",\r\n        \"updatedAt\": \"2021-08-23T14:35:10.095Z\"\r\n    }",
+							"raw": "{\r\n        \"lastLogin\": \"2021-08-23T14:07:40.600Z\",\r\n        \"emailVerified\": false,\r\n        \"settings\": {\r\n            \"sendEmails\": false\r\n        },\r\n        \"profile\": {\r\n            \"happy\": true,\r\n            \"firstName\": \"Thomas\"\r\n        },\r\n        \"_id\": \"{{userId}}\",\r\n        \"email\": \"admin@tomdoesddev.com\",\r\n        \"hash\": \"tTxrr7JCrpZPdvifhmKJYBUa0naYuC\",\r\n        \"salt\": \"jHfDBNljR1xEn9B\",\r\n        \"provider\": \"Local\",\r\n        \"roles\": [\r\n            {\r\n                \"_id\": \"6120f9e95fe7c26cb4c26d1a\",\r\n                \"name\": \"User\",\r\n                \"description\": \"Standard user\"\r\n            },\r\n            {\r\n                \"name\": \"Gaylord\",\r\n                \"description\":\" Right bummer\"\r\n            },\r\n            {\r\n        \"_id\": \"6120f9e95fe7c26cb4c26d1b\",\r\n        \"name\": \"Admin\",\r\n        \"description\": \"Administator\"\r\n    }\r\n        ],\r\n        \"createdAt\": \"2021-08-23T14:34:40.858Z\",\r\n        \"updatedAt\": \"2021-08-23T14:35:10.095Z\"\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"

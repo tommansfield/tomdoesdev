@@ -2,26 +2,35 @@ const Constants = require("../util/constants");
 const User = require("mongoose").model("User");
 const provider = require("../util/enums").provider;
 const authUtils = require("../auth/auth-utils");
+const userService = require("./user.service");
 
 module.exports.login = (req, res, next) => {
+  console.log(req.body.email);
   const errors = validateLogin(req.body);
   if (errors.length) {
-    return res.status(400).json({ success: false, errors });
+    return res.status(400).json({ errors });
   }
   User.findOne({ email: req.body.email }, (err, user) => {
     if (err) {
       return next(err);
     }
     if (!user) {
-      return res.status(404).json({ success: false, message: `No user found for email address: ${req.body.email}` });
+      const error = `No user found for email address: ${req.body.email}`;
+      return res.status(404).json({ error });
     }
     const isValid = authUtils.validPassword(req.body.password, user.hash, user.salt);
 
     if (isValid) {
       const signedJWT = authUtils.issueJWT(user);
-      return res.json({ success: true, user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
+      user.lastLogin = Date.now();
+      user.save((err, newUser) => {
+        if (err) {
+          return next(err);
+        }
+        return res.json({ user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
+      });
     } else {
-      res.status(401).json({ success: false, error: "Invalid password" });
+      res.status(401).json({ error: "Invalid password" });
     }
   });
 };
@@ -31,36 +40,22 @@ module.exports.register = (req, res, next) => {
   if (errors.length) {
     return res.status(400).json({ errors });
   }
-  User.findOne({ email: req.body.email }, (err, user) => {
-    if (err) {
-      next(err);
-    }
-    if (user) {
-      let error = "Email address already registered.";
-      if (provider.LOCAL.localeCompare(user.provider) !== 0) {
-        if (provider.ADMIN.localeCompare(user.provider) === 0) {
-          error = `${error} Please check your email to validate your account.`;
-        } else {
-          error = `${error} Please log in using ${user.provider}.`;
-        }
+  userService.existsByEmail(req, res, () => {
+    const saltHash = authUtils.generateSaltAndHash(req.body.password);
+    const user = new User({
+      email: req.body.email,
+      hash: saltHash.hash,
+      salt: saltHash.salt,
+    });
+    user.lastLogin = Date.now();
+    user.save((err, newUser) => {
+      if (err) {
+        return next(err);
       }
-      return res.status(400).json({ error });
-    } else {
-      const saltHash = authUtils.generateSaltAndHash(req.body.password);
-      const user = new User({
-        email: req.body.email,
-        hash: saltHash.hash,
-        salt: saltHash.salt,
-      });
-      user.save((err, newUser) => {
-        if (err) {
-          return next(err);
-        }
-        const signedJWT = authUtils.issueJWT(user);
-        console.log(`Successfully created new user for email address: ${newUser.email}.`);
-        res.json({ success: true, user: newUser, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
-      });
-    }
+      const signedJWT = authUtils.issueJWT(user);
+      console.log(`Successfully created new user for email address: ${newUser.email}.`);
+      res.json({ user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
+    });
   });
 };
 
