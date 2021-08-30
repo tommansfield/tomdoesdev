@@ -78,7 +78,7 @@ module.exports.deleteAllRoles = (req, res, next) => {
       return next(err);
     }
     const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} roles` : "No roles to remove";
-    res.json({ success: true, message });
+    res.json({ message });
   });
 };
 
@@ -103,7 +103,7 @@ module.exports.createStandardRoles = (req, res, next) => {
             const result = addedRoles ? `successfully added ${addedRoles} role(s).` : "standard roles already exist.";
             const message = err ? err.message : result;
             if (res) {
-              return res.json({ success: true, message });
+              return res.json({ message });
             } else {
               console.log(`-- Adding standard roles -> ${message}`);
               next();

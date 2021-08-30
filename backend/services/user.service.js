@@ -64,7 +64,7 @@ module.exports.deleteUser = (req, res, next) => {
       return res.status(404).json({ error });
     }
     user.remove();
-    res.user(user);
+    res.send(user);
   });
 };
 
@@ -103,7 +103,7 @@ module.exports.createAdminUser = (next) => {
   });
 };
 
-module.exports.existsByEmail = (req, res, next) => {
+const existsByEmail = (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, user) => {
     if (user && user._id !== req.body._id) {
       let error = "Email address already registered";
@@ -114,7 +114,8 @@ module.exports.existsByEmail = (req, res, next) => {
       }
       return res.status(400).json({ error });
     }
-    console.log("not exist");
     next();
   });
 };
+
+module.exports.existsByEmail = existsByEmail;

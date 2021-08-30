@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const ProfileSchema = new mongoose.Schema(
   {
-    happy: {
-      type: Boolean,
-      required: true,
-      default: true,
-    },
     firstName: {
       type: String,
       required: false,
@@ -15,9 +10,17 @@ const ProfileSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    photoUrl: {
+      type: String,
+      required: false,
+    },
   },
   { _id: false }
 );
+
+ProfileSchema.virtual("fullName").get(() => {
+  return `${this.firstName} ${this.lastName}`;
+});
 
 const Profile = mongoose.model("Profile", ProfileSchema);
 Profile.Schema = ProfileSchema;

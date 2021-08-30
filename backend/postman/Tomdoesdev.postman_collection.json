@@ -17,8 +17,8 @@
 								"method": "POST",
 								"header": [],
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/addall",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/addall",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -39,8 +39,8 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -81,8 +81,8 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -111,8 +111,8 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -133,8 +133,8 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -155,8 +155,8 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{adminRoleId}}/users",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{adminRoleId}}/users",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -178,8 +178,8 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -200,8 +200,8 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://{{localhost}}:{{port}}/{{context}}/admin/roles/deleteall",
-									"protocol": "http",
+									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/deleteall",
+									"protocol": "{{protocol}}",
 									"host": [
 										"{{localhost}}"
 									],
@@ -259,14 +259,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/register",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/register",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"{{context}}",
 								"auth",
 								"register"
 							]
@@ -301,14 +300,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/login",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/login",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"{{context}}",
 								"auth",
 								"login"
 							]
@@ -335,7 +333,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \r\n    \"email\": \"admin@tomdoesdev.com\",\r\n    \"password\": \"bc8e04a6b09150c871545012ccd59c08c03489a9e78678e692cf84a62053cc9b\"\r\n}",
+							"raw": "{ \r\n    \"email\": \"admin@tomdoesdev.com\",\r\n    \"password\": \"5f4d41edaebfbe2e021420cd8f59a8a7f8dd1c0b2da1beeba5b27e70a76dbffe\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -343,14 +341,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/login",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/login",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"{{context}}",
 								"auth",
 								"login"
 							]
@@ -374,14 +371,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/auth/user",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/user",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"{{context}}",
 								"auth",
 								"user"
 							]
@@ -400,8 +396,8 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/users",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
@@ -422,9 +418,7 @@
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json();\r",
-									"pm.environment.set(\"userId\", jsonData._id);\r",
-									"\r",
-									""
+									"pm.environment.set(\"userId\", jsonData._id);"
 								],
 								"type": "text/javascript"
 							}
@@ -444,7 +438,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"hash\": \"{{$randomPassword}}{{$randomPassword}}\",\r\n    \"salt\": \"{{$randomPassword}}\",\r\n    \"profile\": {\r\n        \"firstName\": \"Thomas\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -452,8 +446,8 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/users",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
@@ -472,8 +466,8 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
@@ -494,7 +488,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"lastLogin\": \"2021-08-23T14:07:40.600Z\",\r\n        \"emailVerified\": false,\r\n        \"settings\": {\r\n            \"sendEmails\": false\r\n        },\r\n        \"profile\": {\r\n            \"happy\": true,\r\n            \"firstName\": \"Thomas\"\r\n        },\r\n        \"_id\": \"{{userId}}\",\r\n        \"email\": \"admin@tomdoesddev.com\",\r\n        \"hash\": \"tTxrr7JCrpZPdvifhmKJYBUa0naYuC\",\r\n        \"salt\": \"jHfDBNljR1xEn9B\",\r\n        \"provider\": \"Local\",\r\n        \"roles\": [\r\n            {\r\n                \"_id\": \"6120f9e95fe7c26cb4c26d1a\",\r\n                \"name\": \"User\",\r\n                \"description\": \"Standard user\"\r\n            },\r\n            {\r\n                \"name\": \"Gaylord\",\r\n                \"description\":\" Right bummer\"\r\n            },\r\n            {\r\n        \"_id\": \"6120f9e95fe7c26cb4c26d1b\",\r\n        \"name\": \"Admin\",\r\n        \"description\": \"Administator\"\r\n    }\r\n        ],\r\n        \"createdAt\": \"2021-08-23T14:34:40.858Z\",\r\n        \"updatedAt\": \"2021-08-23T14:35:10.095Z\"\r\n    }",
+							"raw": "{\r\n        \"emailVerified\": false,\r\n        \"settings\": {\r\n            \"sendEmails\": false\r\n        },\r\n        \"profile\": {\r\n            \"happy\": true,\r\n            \"firstName\": \"Thomas\"\r\n        },\r\n        \"_id\": \"{{userId}}\",\r\n        \"email\": \"admin@tomdoesdev.com\",\r\n        \"hash\": \"tTxrr7JCrpZPdvifhmKJYBUa0naYuC\",\r\n        \"salt\": \"jHfDBNljR1xEn9B\",\r\n        \"provider\": \"Local\",\r\n        \"roles\": [\r\n            {\r\n                \"_id\": \"6120f9e95fe7c26cb4c26d1a\",\r\n                \"name\": \"User\",\r\n                \"description\": \"Standard user\"\r\n            },\r\n            {\r\n                \"name\": \"Gaylord\",\r\n                \"description\":\" Right bummer\"\r\n            },\r\n            {\r\n        \"_id\": \"6120f9e95fe7c26cb4c26d1b\",\r\n        \"name\": \"Admin\",\r\n        \"description\": \"Administator\"\r\n    }\r\n        ],\r\n        \"createdAt\": \"2021-08-23T14:34:40.858Z\",\r\n        \"updatedAt\": \"2021-08-23T14:35:10.095Z\"\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -502,8 +496,8 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
@@ -523,8 +517,8 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
@@ -544,8 +538,8 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://{{localhost}}:{{port}}/{{context}}/users/deleteall",
-							"protocol": "http",
+							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/deleteall",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{localhost}}"
 							],
@@ -567,8 +561,8 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{localhost}}:{{port}}/{{context}}",
-					"protocol": "http",
+					"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}",
+					"protocol": "{{protocol}}",
 					"host": [
 						"{{localhost}}"
 					],

@@ -23,9 +23,6 @@ const UserSchema = new mongoose.Schema(
       required: true,
       default: Provider.LOCAL,
     },
-    lastLogin: {
-      type: Date,
-    },
     photoUrl: {
       type: String,
     },

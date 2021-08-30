@@ -1,39 +1,9 @@
-const Constants = require("../util/constants");
-const User = require("mongoose").model("User");
-const provider = require("../util/enums").provider;
+const passport = require("passport");
 const authUtils = require("../auth/auth-utils");
 const userService = require("./user.service");
-
-module.exports.login = (req, res, next) => {
-  console.log(req.body.email);
-  const errors = validateLogin(req.body);
-  if (errors.length) {
-    return res.status(400).json({ errors });
-  }
-  User.findOne({ email: req.body.email }, (err, user) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      const error = `No user found for email address: ${req.body.email}`;
-      return res.status(404).json({ error });
-    }
-    const isValid = authUtils.validPassword(req.body.password, user.hash, user.salt);
-
-    if (isValid) {
-      const signedJWT = authUtils.issueJWT(user);
-      user.lastLogin = Date.now();
-      user.save((err, newUser) => {
-        if (err) {
-          return next(err);
-        }
-        return res.json({ user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
-      });
-    } else {
-      res.status(401).json({ error: "Invalid password" });
-    }
-  });
-};
+const Provider = require("../util/enums").provider;
+const Constants = require("../util/constants");
+const User = require("mongoose").model("User");
 
 module.exports.register = (req, res, next) => {
   const errors = validateRegistration(req.body);
@@ -47,20 +17,84 @@ module.exports.register = (req, res, next) => {
       hash: saltHash.hash,
       salt: saltHash.salt,
     });
-    user.lastLogin = Date.now();
     user.save((err, newUser) => {
       if (err) {
         return next(err);
       }
-      const signedJWT = authUtils.issueJWT(user);
-      console.log(`Successfully created new user for email address: ${newUser.email}.`);
-      res.json({ user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
+      console.log(`Successfully signed up new user: ${newUser.email}.`);
+      return signJWTToken(user);
     });
   });
 };
 
-module.exports.getUser = (req, res, next) => {
-  res.send(req.user);
+module.exports.login = (req, res, next) => {
+  const errors = validateLogin(req.body);
+  if (errors.length) {
+    return res.status(400).json({ errors });
+  }
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      const error = `No user found for email address: ${req.body.email}`;
+      return res.status(404).json({ error });
+    }
+    const isValid = authUtils.validPassword(req.body.password, user.hash, user.salt);
+    if (isValid) {
+      signJWTToken(user, res);
+    } else {
+      res.status(401).json({ error: "Invalid password" });
+    }
+  });
+};
+
+module.exports.redirectTo = (provider) => {
+  switch (provider) {
+    case Provider.FACEBOOK: {
+      return passport.authenticate(Provider.FACEBOOK, { scope: ["email", "public_profile"] });
+    }
+    default:
+      return (req, res, next) => {
+        const error = { status: 400, message: `Unknown authentication provider: ${provider}` };
+        next(error);
+      };
+  }
+};
+
+const authenticate = (provider) => {
+  return (req, res, next) => {
+    passport.authenticate(provider || Provider.LOCAL, { session: false }, (err, user) => {
+      if (err) {
+        return next(err);
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  };
+};
+
+module.authenticate = authenticate;
+
+module.exports.getUser = (provider) => {
+  return (req, res) => {
+    authenticate(provider)(req, res, () => {
+      res.send(req.user);
+    });
+  };
+};
+
+module.exports.sendToken = (provider) => {
+  return (req, res) => {
+    authenticate(provider)(req, res, () => {
+      signJWTToken(req.user, res);
+    });
+  };
+};
+
+signJWTToken = function (user, res) {
+  const signedJWT = authUtils.issueJWT(user);
+  return res.json({ user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
 };
 
 validateLogin = function (request) {

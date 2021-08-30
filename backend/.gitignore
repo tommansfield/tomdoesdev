@@ -4,6 +4,8 @@
 /config/keys.js
 id_rsa_priv.pem
 id_rsa_pub.pem
+server.crt
+server.key
 
 # compiled output
 /dist
