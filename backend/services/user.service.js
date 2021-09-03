@@ -84,7 +84,7 @@ module.exports.createAdminUser = (next) => {
     const password = authUtils.generatePassword();
     const hashAndSalt = authUtils.generateSaltAndHash(password);
     if (err) {
-      return console.error(err);
+      return next(err);
     }
     if (!user) {
       user = adminUser;

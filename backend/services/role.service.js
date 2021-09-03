@@ -24,7 +24,6 @@ module.exports.getRoleById = (req, res, next) => {
 };
 
 module.exports.getUsersByRoleId = (req, res, next) => {
-  console.log(req.params.id);
   User.find({ "roles._id": req.params.id }, (err, users) => {
     if (err) {
       return next(err);
@@ -59,7 +58,6 @@ module.exports.updateRole = (req, res, next) => {
 
 module.exports.deleteRole = (req, res, next) => {
   Role.findByIdAndRemove(req.params.id, (err, role) => {
-    console.log(role);
     if (err) {
       return next(err);
     }

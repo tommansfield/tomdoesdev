@@ -1,6 +1,4 @@
 const router = require("express").Router();
-const passport = require("passport");
-const authUtils = require("../auth/auth-utils");
 const authService = require("../services/auth.service");
 const Provider = require("../util/enums").provider;
 

@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const keys = require("./keys");
 const User = require("mongoose").model("User");
-const provider = require("../util/enums").provider;
+const Provider = require("../util/enums").provider;
 
 const publicKeyPath = path.join(__dirname, "..", keys.publicKey);
 const PUB_KEY = fs.readFileSync(publicKeyPath, "utf8");
@@ -38,11 +38,11 @@ const facebookStrategy = new FacebookStrategy(
     profileFields: ["name", "photos", "email"],
   },
   function (accessToken, refreshToken, facebookProfile, done) {
-    const email = facebookProfile.emails[0].value;
-    if (!email) {
+    if (!facebookProfile.emails) {
       const error = "No email address was provided by Facebook";
       return done(error, null);
     }
+    const email = facebookProfile.emails[0].value;
     let newUser = false;
     User.findOne({ email }, (err, user) => {
       if (err) {
@@ -72,8 +72,7 @@ const extractUserProfile = function (profile) {
   };
 };
 
-passport.use(provider.LOCAL, jwtStrategy);
-passport.use(provider.ADMIN, jwtStrategy);
-passport.use(provider.FACEBOOK, facebookStrategy);
+passport.use(Provider.LOCAL, jwtStrategy);
+passport.use(Provider.FACEBOOK, facebookStrategy);
 
 module.exports = passport;

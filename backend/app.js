@@ -67,7 +67,6 @@ function startApplication() {
           server = http.createServer(app);
         }
         server.listen(process.env.APP_PORT, () => {
-          const keys = require("./config/keys");
           console.log(`${process.env.APP_NAME} app listening on port ${process.env.APP_PORT}!`);
         });
       });

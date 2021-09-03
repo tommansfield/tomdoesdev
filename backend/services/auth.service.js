@@ -22,7 +22,7 @@ module.exports.register = (req, res, next) => {
         return next(err);
       }
       console.log(`Successfully signed up new user: ${newUser.email}.`);
-      return signJWTToken(user);
+      signJWTToken(newUser, res);
     });
   });
 };
@@ -66,38 +66,41 @@ const authenticate = (provider) => {
   return (req, res, next) => {
     passport.authenticate(provider || Provider.LOCAL, { session: false }, (err, user) => {
       if (err) {
-        return next(err);
+        return res.status(401).json({ error: err });
       }
-      req.user = user;
-      next();
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        const error = "Unable to retrieve user information";
+        res.status(401).json({ error });
+      }
     })(req, res, next);
   };
 };
 
-module.authenticate = authenticate;
-
 module.exports.getUser = (provider) => {
-  return (req, res) => {
-    authenticate(provider)(req, res, () => {
+  return (req, res, next) => {
+    authenticate(provider)(req, res, (err) => {
       res.send(req.user);
     });
   };
 };
 
 module.exports.sendToken = (provider) => {
-  return (req, res) => {
-    authenticate(provider)(req, res, () => {
+  return (req, res, next) => {
+    authenticate(provider)(req, res, (err) => {
       signJWTToken(req.user, res);
     });
   };
 };
 
-signJWTToken = function (user, res) {
+const signJWTToken = function (user, res) {
   const signedJWT = authUtils.issueJWT(user);
   return res.json({ user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
 };
 
-validateLogin = function (request) {
+const validateLogin = function (request) {
   const errors = [];
   if (!request.email) {
     errors.push("Please enter an email address.");
@@ -114,7 +117,7 @@ validateLogin = function (request) {
   return errors;
 };
 
-validateRegistration = function (request) {
+const validateRegistration = function (request) {
   const errors = [];
   if (!request.email) {
     errors.push("Please enter an email address.");
