@@ -6,13 +6,13 @@ const keys = {
   sslKey: "server.key",
   sslCertificate: "server.crt",
   database: {
-    url: "__MONGO_URL__",
-    username: "__MONGO_USERNAME__",
-    password: "__MONGO_PASSWORD__",
+    url: "cluster0.t4j8r.mongodb.net",
+    username: "admin",
+    password: "gYHupavZqdKyHqB2",
   },
   facebook: {
-    clientId: "__FACEBOOK_CLIENTID__",
-    clientSecret: "__FACEBOOK_CLIENTSECRET__",
+    clientId: "1653242078203037",
+    clientSecret: "fdc7b07a54642b57c204d71c636f8f91",
     callbackUrl: `${appUrl}/auth/facebook/callback`,
   },
   google: {
