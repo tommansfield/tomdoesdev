@@ -24,7 +24,7 @@ module.exports.validPassword = function (password, hash, salt) {
 
 module.exports.issueJWT = function (user) {
   const _id = user._id;
-  const expiresIn = user.settings.rememberMe ? "1y" : "6h";
+  const expiresIn = user.settings.rememberMe ? "1y" : "2h";
   const payload = { sub: _id, iat: Date.now() };
   const token = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn, algorithm: "RS256" });
   return { token, expiresIn };

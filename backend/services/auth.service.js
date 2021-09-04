@@ -4,8 +4,10 @@ const userService = require("./user.service");
 const Provider = require("../util/enums").provider;
 const Constants = require("../util/constants");
 const User = require("mongoose").model("User");
+const Role = require("../models/user/role");
 
 module.exports.register = (req, res, next) => {
+  console.log("here");
   const errors = validateRegistration(req.body);
   if (errors.length) {
     return res.status(400).json({ errors });
@@ -37,16 +39,32 @@ module.exports.login = (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      const error = `No user found for email address: ${req.body.email}`;
-      return res.status(404).json({ error });
+      const error = `No user found for email address: ${req.body.email}.`;
+      return res.status(401).json({ error });
     }
     const isValid = authUtils.validPassword(req.body.password, user.hash, user.salt);
-    if (isValid) {
-      signJWTToken(user, res);
+    if (!isValid) {
+      res.status(401).json({ error: "Invalid password." });
     } else {
-      res.status(401).json({ error: "Invalid password" });
+      signJWTToken(user, res);
     }
   });
+};
+
+const authenticate = (req, res, next) => {
+  passport.authenticate(Provider.LOCAL, { session: false })(req, res, next);
+};
+
+module.exports.authenticate = authenticate;
+
+module.exports.nonAuthenticate = (req, res, next) => {
+  passport.authenticate(Provider.LOCAL, { session: false }, (err, user) => {
+    if (user) {
+      const error = "Already logged in.";
+      return res.status(400).json({ error });
+    }
+    console.log(err);
+  })(req, res, next);
 };
 
 module.exports.redirectTo = (provider) => {
@@ -56,42 +74,25 @@ module.exports.redirectTo = (provider) => {
     }
     default:
       return (req, res, next) => {
-        const error = { status: 400, message: `Unknown authentication provider: ${provider}` };
+        const error = { status: 400, message: `Unknown authentication provider: ${provider}.` };
         next(error);
       };
   }
 };
 
-const authenticate = (provider) => {
+module.exports.sendToken = (provider) => {
   return (req, res, next) => {
     passport.authenticate(provider || Provider.LOCAL, { session: false }, (err, user) => {
       if (err) {
         return res.status(401).json({ error: err });
       }
       if (user) {
-        req.user = user;
-        next();
+        return signJWTToken(user, res);
       } else {
-        const error = "Unable to retrieve user information";
+        const error = "Unable to retrieve user information.";
         res.status(401).json({ error });
       }
     })(req, res, next);
-  };
-};
-
-module.exports.getUser = (provider) => {
-  return (req, res, next) => {
-    authenticate(provider)(req, res, (err) => {
-      res.send(req.user);
-    });
-  };
-};
-
-module.exports.sendToken = (provider) => {
-  return (req, res, next) => {
-    authenticate(provider)(req, res, (err) => {
-      signJWTToken(req.user, res);
-    });
   };
 };
 

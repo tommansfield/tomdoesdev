@@ -18,6 +18,7 @@ const jwtStrategy = new JwtStrategy(
     algorithms: ["RS256"],
   },
   (payload, done) => {
+    console.log("authenticating..");
     User.findById({ _id: payload.sub }, (err, user) => {
       if (user) {
         return done(null, user);
@@ -53,12 +54,14 @@ const facebookStrategy = new FacebookStrategy(
         user = new User({ email });
         user.profile = extractUserProfile(facebookProfile);
       }
-      user.save((err, newUser) => {
+      user.save((err, savedUser) => {
         if (err) {
           return done(err, false);
         }
-        console.log(`Successfully signed up new Facebook user: ${newUser.email}.`);
-        return done(err, newUser);
+        if (newUser) {
+          console.log(`Successfully signed up new Facebook user: ${newUser.email}.`);
+        }
+        return done(err, savedUser);
       });
     });
   }
