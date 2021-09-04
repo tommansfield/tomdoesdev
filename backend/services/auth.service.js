@@ -7,7 +7,6 @@ const User = require("mongoose").model("User");
 const Role = require("../models/user/role");
 
 module.exports.register = (req, res, next) => {
-  console.log("here");
   const errors = validateRegistration(req.body);
   if (errors.length) {
     return res.status(400).json({ errors });
@@ -42,7 +41,11 @@ module.exports.login = (req, res, next) => {
       const error = `No user found for email address: ${req.body.email}.`;
       return res.status(401).json({ error });
     }
-    const isValid = authUtils.validPassword(req.body.password, user.hash, user.salt);
+    const isValid = authUtils.validPassword(
+      req.body.password,
+      user.hash,
+      user.salt
+    );
     if (!isValid) {
       res.status(401).json({ error: "Invalid password." });
     } else {
@@ -59,22 +62,28 @@ module.exports.authenticate = authenticate;
 
 module.exports.nonAuthenticate = (req, res, next) => {
   passport.authenticate(Provider.LOCAL, { session: false }, (err, user) => {
+    console.log(err);
     if (user) {
       const error = "Already logged in.";
       return res.status(400).json({ error });
     }
-    console.log(err);
+    next();
   })(req, res, next);
 };
 
 module.exports.redirectTo = (provider) => {
   switch (provider) {
     case Provider.FACEBOOK: {
-      return passport.authenticate(Provider.FACEBOOK, { scope: ["email", "public_profile"] });
+      return passport.authenticate(Provider.FACEBOOK, {
+        scope: ["email", "public_profile"],
+      });
     }
     default:
       return (req, res, next) => {
-        const error = { status: 400, message: `Unknown authentication provider: ${provider}.` };
+        const error = {
+          status: 400,
+          message: `Unknown authentication provider: ${provider}.`,
+        };
         next(error);
       };
   }
@@ -82,23 +91,31 @@ module.exports.redirectTo = (provider) => {
 
 module.exports.sendToken = (provider) => {
   return (req, res, next) => {
-    passport.authenticate(provider || Provider.LOCAL, { session: false }, (err, user) => {
-      if (err) {
-        return res.status(401).json({ error: err });
+    passport.authenticate(
+      provider || Provider.LOCAL,
+      { session: false },
+      (err, user) => {
+        if (err) {
+          return res.status(401).json({ error: err });
+        }
+        if (user) {
+          return signJWTToken(user, res);
+        } else {
+          const error = "Unable to retrieve user information.";
+          res.status(401).json({ error });
+        }
       }
-      if (user) {
-        return signJWTToken(user, res);
-      } else {
-        const error = "Unable to retrieve user information.";
-        res.status(401).json({ error });
-      }
-    })(req, res, next);
+    )(req, res, next);
   };
 };
 
 const signJWTToken = function (user, res) {
   const signedJWT = authUtils.issueJWT(user);
-  return res.json({ user, token: signedJWT.token, expiresIn: signedJWT.expiresIn });
+  return res.json({
+    user,
+    token: signedJWT.token,
+    expiresIn: signedJWT.expiresIn,
+  });
 };
 
 const validateLogin = function (request) {
@@ -140,7 +157,10 @@ const validateRegistration = function (request) {
   }
   if (!request.matchingPassword) {
     errors.push("Please enter a matching password.");
-  } else if (request.password && request.password.localeCompare(request.matchingPassword) !== 0) {
+  } else if (
+    request.password &&
+    request.password.localeCompare(request.matchingPassword) !== 0
+  ) {
     errors.push("Passwords do not match.");
   }
   return errors;
