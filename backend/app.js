@@ -25,10 +25,6 @@ app.use(express.urlencoded({ extended: false }));
 // Keypair creator
 const keypair = require("./auth/keypair");
 
-// Authentication
-const passport = require("./config/passport");
-app.use(passport.initialize());
-
 // Cors
 const cors = require("cors");
 app.use(cors());
@@ -39,7 +35,9 @@ app.use(serveFavicon(`${__dirname}/public/favicon.ico`));
 
 // Logger
 const morgan = require("morgan");
-app.use(morgan(":date: HTTP :method -> :url -> :response-time -> :remote-addr"));
+app.use(
+  morgan(":date: HTTP :method -> :url -> :response-time -> :remote-addr")
+);
 
 // Routes
 app.use(`/auth`, require("./routes/auth.routes"));
@@ -58,6 +56,10 @@ function startApplication() {
     mongoose.connectToDB(() => {
       const certificates = require("./auth/certificates");
       certificates.readCertificates((credentials) => {
+        // Passport configuration
+        const passport = require("./config/passport");
+        app.use(passport.initialize());
+        // Server start
         let server;
         if (credentials) {
           console.log("Starting server (protocol: https)..");
@@ -67,7 +69,9 @@ function startApplication() {
           server = http.createServer(app);
         }
         server.listen(process.env.APP_PORT, () => {
-          console.log(`${process.env.APP_NAME} app listening on port ${process.env.APP_PORT}!`);
+          console.log(
+            `${process.env.APP_NAME} app listening on port ${process.env.APP_PORT}!`
+          );
         });
       });
     });

@@ -9,22 +9,24 @@ const User = require("mongoose").model("User");
 const Provider = require("../util/enums").provider;
 
 const publicKeyPath = path.join(__dirname, "..", keys.publicKey);
-const PUB_KEY = fs.readFileSync(publicKeyPath, "utf8");
 
 const jwtStrategy = new JwtStrategy(
   {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: PUB_KEY,
+    secretOrKey: fs.readFileSync(publicKeyPath, "utf8"),
     algorithms: ["RS256"],
   },
   (payload, done) => {
-    console.log("authenticating..");
     User.findById({ _id: payload.sub }, (err, user) => {
       if (user) {
         return done(null, user);
       }
       if (!err) {
-        err = { status: 401, message: "The token provided corresponds to a user that doesn't exist" };
+        err = {
+          status: 401,
+          message:
+            "The token provided corresponds to a user that doesn't exist",
+        };
       }
       return done(err, false);
     });
@@ -59,7 +61,9 @@ const facebookStrategy = new FacebookStrategy(
           return done(err, false);
         }
         if (newUser) {
-          console.log(`Successfully signed up new Facebook user: ${newUser.email}.`);
+          console.log(
+            `Successfully signed up new Facebook user: ${newUser.email}.`
+          );
         }
         return done(err, savedUser);
       });
