@@ -78,7 +78,6 @@ module.exports.deleteRole = (req, res, next) => {
 module.exports.deleteAllRoles = (req, res, next) => {
   Role.deleteMany({}, (err, doc) => {
     if (err) {
-      console.log("yep");
       return next(err);
     }
     const message =

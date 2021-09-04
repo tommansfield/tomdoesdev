@@ -62,7 +62,6 @@ module.exports.authenticate = authenticate;
 
 module.exports.nonAuthenticate = (req, res, next) => {
   passport.authenticate(Provider.LOCAL, { session: false }, (err, user) => {
-    console.log(err);
     if (user) {
       const error = "Already logged in.";
       return res.status(400).json({ error });

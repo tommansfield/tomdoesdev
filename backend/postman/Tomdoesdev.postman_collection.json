@@ -17,10 +17,10 @@
 								"method": "POST",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/addall",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles/addall",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -39,10 +39,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -81,10 +81,10 @@
 									}
 								},
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -111,10 +111,10 @@
 									}
 								},
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -133,10 +133,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -155,10 +155,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{adminRoleId}}/users",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles/{{adminRoleId}}/users",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -178,10 +178,10 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles/{{roleId}}",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -200,10 +200,10 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/admin/roles/deleteall",
+									"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/admin/roles/deleteall",
 									"protocol": "{{protocol}}",
 									"host": [
-										"{{localhost}}"
+										"{{host}}"
 									],
 									"port": "{{port}}",
 									"path": [
@@ -240,6 +240,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"if (jsonData.token) {\r",
+									"    pm.environment.set(\"accessToken\", jsonData.token);\r",
+									"}\r",
 									""
 								],
 								"type": "text/javascript"
@@ -259,10 +263,10 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/register",
+							"raw": "{{protocol}}://{{host}}:{{port}}/auth/register",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -281,7 +285,9 @@
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json();\r",
-									"pm.environment.set(\"accessToken\", jsonData.token);"
+									"if (jsonData.token) {\r",
+									"    pm.environment.set(\"accessToken\", jsonData.token);\r",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -300,10 +306,10 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/login",
+							"raw": "{{protocol}}://{{host}}:{{port}}/auth/login",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -322,7 +328,9 @@
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json();\r",
-									"pm.environment.set(\"accessToken\", jsonData.token);"
+									"if (jsonData.token) {\r",
+									"    pm.environment.set(\"accessToken\", jsonData.token);\r",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -341,10 +349,10 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/login",
+							"raw": "{{protocol}}://{{host}}:{{port}}/auth/login",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -371,10 +379,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/auth/user",
+							"raw": "{{protocol}}://{{host}}:{{port}}/auth/user",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -396,10 +404,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/users",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -438,7 +446,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n}",
+							"raw": "{\r\n    \"email\": \"{{$randomEmail}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -446,10 +454,10 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/users",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -466,10 +474,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/users/{{userId}}",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -496,10 +504,10 @@
 							}
 						},
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/users/{{userId}}",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -517,10 +525,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/{{userId}}",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/users/{{userId}}",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -538,10 +546,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}/users/deleteall",
+							"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}/users/deleteall",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{localhost}}"
+								"{{host}}"
 							],
 							"port": "{{port}}",
 							"path": [
@@ -561,10 +569,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{protocol}}://{{localhost}}:{{port}}/{{context}}",
+					"raw": "{{protocol}}://{{host}}:{{port}}/{{context}}",
 					"protocol": "{{protocol}}",
 					"host": [
-						"{{localhost}}"
+						"{{host}}"
 					],
 					"port": "{{port}}",
 					"path": [
