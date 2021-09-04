@@ -12,8 +12,8 @@ const dotenvExpand = require("dotenv-expand");
 dotenvExpand(dotenv.config());
 
 // Environment
-const environment = require("./util/enums").environment;
-const env = process.env.ENV || environment.DEV;
+const Environment = require("./util/enums").environment;
+const env = process.env.ENV || Environment.DEV;
 
 // MongoDB
 const mongoose = require("./config/mongoose");
@@ -24,6 +24,12 @@ app.use(express.urlencoded({ extended: false }));
 
 // Keypair creator
 const keypair = require("./auth/keypair");
+
+// SSL certificate creator
+const certificates = require("./auth/certificates");
+
+// Passport authentication
+const passport = require("./config/passport");
 
 // Cors
 const cors = require("cors");
@@ -53,15 +59,14 @@ app.use(errorHandler);
 function startApplication() {
   console.log(`Starting application (environment: ${env})..`);
   keypair.generateKeyPair(() => {
+    // Passport configuration
+    app.use(passport.initialize());
+    // Database connection
     mongoose.connectToDB(() => {
-      const certificates = require("./auth/certificates");
-      certificates.readCertificates((credentials) => {
-        // Passport configuration
-        const passport = require("./config/passport");
-        app.use(passport.initialize());
-        // Server start
+      // Generate self-signed SSL certificates
+      certificates.createCertificate((credentials) => {
         let server;
-        if (credentials) {
+        if (credentials && env === Environment.DEV) {
           console.log("Starting server (protocol: https)..");
           server = https.createServer(credentials, app);
         } else {

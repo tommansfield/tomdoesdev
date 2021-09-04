@@ -3,8 +3,6 @@ const appUrl = process.env.APP_URL;
 const keys = {
   privateKey: "/auth/keys/id_rsa_priv.pem",
   publicKey: "/auth/keys/id_rsa_pub.pem",
-  sslKey: "/auth/keys/server.key",
-  sslCertificate: "/auth/keys/server.crt",
   database: {
     url: "cluster0.t4j8r.mongodb.net",
     username: "admin",

@@ -28,6 +28,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
     "passport-twitter": "^1.0.4",
+    "pem": "^1.14.4",
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {

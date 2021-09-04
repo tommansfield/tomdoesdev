@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const keys = require("../config/keys");
-const environment = require("../util/enums").environment;
+const Environment = require("../util/enums").environment;
 
 // Register models
 require("../models/user/role");
@@ -15,7 +15,9 @@ const db = {
   pass: keys.database.password,
 };
 
-const url = `${db.type}://${db.user}:${db.pass}@${db.host}/${db.name.toLocaleLowerCase()}${db.opts}`;
+const url = `${db.type}://${db.user}:${db.pass}@${
+  db.host
+}/${db.name.toLocaleLowerCase()}${db.opts}`;
 
 exports.connectToDB = (done) => {
   let message = "Connecting to MongoDB..";
@@ -43,7 +45,7 @@ const initializeDB = (done) => {
 
 const initializeUsers = (done) => {
   // Add admin user (dev only)
-  if (process.env.ENV === environment.DEV) {
+  if (process.env.ENV === Environment.DEV) {
     const userService = require("../services/user.service");
     userService.createAdminUser(() => {
       done();
