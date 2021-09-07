@@ -1,6 +1,6 @@
 const User = require("mongoose").model("User");
 const Role = require("mongoose").model("Role");
-const authUtils = require("../auth/auth-utils");
+const crypto = require("../auth/crypto");
 const provider = require("../util/enums").provider;
 
 module.exports.getUsers = (_, res) => {
@@ -81,8 +81,8 @@ module.exports.deleteAllUsers = (req, res, next) => {
 module.exports.createAdminUser = (next) => {
   const adminUser = User.adminUser;
   User.findByIdAndUpdate(adminUser._id, adminUser, (err, user) => {
-    const password = authUtils.generatePassword();
-    const hashAndSalt = authUtils.generateSaltAndHash(password);
+    const password = crypto.generatePassword();
+    const hashAndSalt = crypto.generateSaltAndHash(password);
     if (err) {
       return next(err);
     }
@@ -97,7 +97,7 @@ module.exports.createAdminUser = (next) => {
     user.save((err, newUser) => {
       const message = err ? err.message : `successfully ${action} admin user.`;
       console.log(`-- Adding admin user -> ${message}`);
-      console.log(`-- email: ${newUser.email}, password: ${password}.`);
+      console.log(`-- email: ${newUser.email}, password: ${password}`);
       next();
     });
   });

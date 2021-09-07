@@ -43,22 +43,17 @@ module.exports.createRole = (req, res, next) => {
 };
 
 module.exports.updateRole = (req, res, next) => {
-  Role.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true },
-    (err, role) => {
-      if (err) {
-        return next(err);
-      }
-      if (!role) {
-        const error = `No role found with id: ${req.params.id}`;
-        return res.status(404).json({ error });
-      } else {
-        res.send(role);
-      }
+  Role.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, role) => {
+    if (err) {
+      return next(err);
     }
-  );
+    if (!role) {
+      const error = `No role found with id: ${req.params.id}`;
+      return res.status(404).json({ error });
+    } else {
+      res.send(role);
+    }
+  });
 };
 
 module.exports.deleteRole = (req, res, next) => {
@@ -80,10 +75,7 @@ module.exports.deleteAllRoles = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    const message =
-      doc.deletedCount > 0
-        ? `Successfully removed ${doc.deletedCount} roles`
-        : "No roles to remove";
+    const message = doc.deletedCount > 0 ? `Successfully removed ${doc.deletedCount} roles` : "No roles to remove";
     res.json({ message });
   });
 };
@@ -106,9 +98,7 @@ module.exports.createStandardRoles = (req, res, next) => {
             return next(err);
           }
           if (index === Role.standardRoles.length - 1) {
-            const result = addedRoles
-              ? `Successfully added ${addedRoles} role(s).`
-              : "Standard roles already exist.";
+            const result = addedRoles ? `Successfully added ${addedRoles} role(s).` : "Standard roles already exist.";
             const message = err ? err.message : result;
             if (res) {
               return res.json({ message });

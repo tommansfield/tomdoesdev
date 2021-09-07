@@ -1,11 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # passwords
-/config/keys.js
-id_rsa_priv.pem
-id_rsa_pub.pem
-server.crt
-server.key
+auth/keys/id_rsa_priv.pem
+auth/keys/id_rsa_pub.pem
 
 # compiled output
 /dist

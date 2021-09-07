@@ -5,9 +5,7 @@ module.exports.createCertificate = (done) => {
     if (!keys) {
       return done();
     }
-    const credentials = keys
-      ? { key: keys.serviceKey, cert: keys.certificate }
-      : {};
+    const credentials = keys ? { key: keys.serviceKey, cert: keys.certificate } : {};
     done(credentials);
   });
 };

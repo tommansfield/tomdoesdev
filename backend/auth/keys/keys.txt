@@ -1,1 +1,1 @@
-Your SSL certificates and private/public keypairs will appear here.
+Your private/public keypair will appear here.

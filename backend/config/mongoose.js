@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const keys = require("../config/keys");
 const Environment = require("../util/enums").environment;
 
 // Register models
@@ -8,32 +7,32 @@ require("../models/user/user");
 
 const db = {
   type: process.env.DATABASE_TYPE,
+  user: process.env.DATABASE_USERNAME,
+  pass: process.env.DATABASE_PASSWORD,
+  host: process.env.DATABASE_HOST,
   name: process.env.DATABASE_NAME,
   opts: process.env.DATABASE_OPTIONS,
-  host: keys.database.url,
-  user: keys.database.username,
-  pass: keys.database.password,
 };
 
-const url = `${db.type}://${db.user}:${db.pass}@${
-  db.host
-}/${db.name.toLocaleLowerCase()}${db.opts}`;
+const url = `${db.type}://${db.user}:${db.pass}@${db.host}/${db.name.toLocaleLowerCase()}${db.opts}`;
 
-exports.connectToDB = (done) => {
+module.exports.connectToDB = (done) => {
   let message = "Connecting to MongoDB..";
-  mongoose
-    .connect(url, {
+  mongoose.connect(
+    url,
+    {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    })
-    .then(async () => {
-      console.log(`${message} done.`);
-      initializeDB(() => done());
-    })
-    .catch((err) => {
-      console.error(message);
-      console.error(err);
-    });
+    },
+    (err) => {
+      if (err) {
+        console.error(`${message} ${err.message}`);
+      } else {
+        console.log(`${message} done.`);
+        initializeDB(() => done());
+      }
+    }
+  );
 };
 
 const initializeDB = (done) => {
@@ -45,9 +44,12 @@ const initializeDB = (done) => {
 
 const initializeUsers = (done) => {
   // Add admin user (dev only)
-  if (process.env.ENV === Environment.DEV) {
+  if (process.env.APP_ENV === Environment.DEV) {
     const userService = require("../services/user.service");
-    userService.createAdminUser(() => {
+    userService.createAdminUser((err) => {
+      if (err) {
+        return console.error(err.message);
+      }
       done();
     });
   } else {

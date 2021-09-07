@@ -8,7 +8,7 @@ router.post("/register", authService.nonAuthenticate, authService.register);
 router.get("/facebook", authService.redirectTo(Provider.FACEBOOK));
 router.get("/facebook/callback", authService.sendToken(Provider.FACEBOOK));
 
-router.get("/user", authService.authenticate, (req, res, next) => {
+router.get("/user", authService.authenticate, (req, res) => {
   res.send(req.user);
 });
 

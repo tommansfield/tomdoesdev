@@ -1,10 +1,14 @@
 const passport = require("passport");
-const authUtils = require("../auth/auth-utils");
+const jsonwebtoken = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
+const User = require("mongoose").model("User");
+const Role = require("../models/user/role");
+const crypto = require("../auth/crypto");
 const userService = require("./user.service");
 const Provider = require("../util/enums").provider;
 const Constants = require("../util/constants");
-const User = require("mongoose").model("User");
-const Role = require("../models/user/role");
+const privateKeyPath = path.join(__dirname, "..", process.env.PRIVATE_KEY_PATH);
 
 module.exports.register = (req, res, next) => {
   const errors = validateRegistration(req.body);
@@ -12,7 +16,7 @@ module.exports.register = (req, res, next) => {
     return res.status(400).json({ errors });
   }
   userService.existsByEmail(req, res, () => {
-    const saltHash = authUtils.generateSaltAndHash(req.body.password);
+    const saltHash = crypto.generateSaltAndHash(req.body.password);
     const user = new User({
       email: req.body.email,
       hash: saltHash.hash,
@@ -41,11 +45,7 @@ module.exports.login = (req, res, next) => {
       const error = `No user found for email address: ${req.body.email}.`;
       return res.status(401).json({ error });
     }
-    const isValid = authUtils.validPassword(
-      req.body.password,
-      user.hash,
-      user.salt
-    );
+    const isValid = crypto.validPassword(req.body.password, user.hash, user.salt);
     if (!isValid) {
       res.status(401).json({ error: "Invalid password." });
     } else {
@@ -59,6 +59,15 @@ const authenticate = (req, res, next) => {
 };
 
 module.exports.authenticate = authenticate;
+
+module.exports.authenticateAdmin = (req, res, next) => {
+  authenticate(req, res, () => {
+    if (req.user.roles.filter((role) => role.equals(Role.ADMIN)).length === 0) {
+      return res.sendStatus(403);
+    }
+    next();
+  });
+};
 
 module.exports.nonAuthenticate = (req, res, next) => {
   passport.authenticate(Provider.LOCAL, { session: false }, (err, user) => {
@@ -90,30 +99,32 @@ module.exports.redirectTo = (provider) => {
 
 module.exports.sendToken = (provider) => {
   return (req, res, next) => {
-    passport.authenticate(
-      provider || Provider.LOCAL,
-      { session: false },
-      (err, user) => {
-        if (err) {
-          return res.status(401).json({ error: err });
-        }
-        if (user) {
-          return signJWTToken(user, res);
-        } else {
-          const error = "Unable to retrieve user information.";
-          res.status(401).json({ error });
-        }
+    passport.authenticate(provider || Provider.LOCAL, { session: false }, (err, user) => {
+      if (err) {
+        return res.status(401).json({ error: err });
       }
-    )(req, res, next);
+      if (user) {
+        return signJWTToken(user, res);
+      } else {
+        const error = "Unable to retrieve user information.";
+        res.status(401).json({ error });
+      }
+    })(req, res, next);
   };
 };
 
 const signJWTToken = function (user, res) {
-  const signedJWT = authUtils.issueJWT(user);
+  const _id = user._id;
+  const expiresIn = user.settings.rememberMe ? "1y" : "2h";
+  const payload = { sub: _id, iat: Date.now() };
+  const token = jsonwebtoken.sign(payload, fs.readFileSync(privateKeyPath), {
+    expiresIn,
+    algorithm: "RS256",
+  });
   return res.json({
     user,
-    token: signedJWT.token,
-    expiresIn: signedJWT.expiresIn,
+    token: token,
+    expiresIn: expiresIn,
   });
 };
 
@@ -156,10 +167,7 @@ const validateRegistration = function (request) {
   }
   if (!request.matchingPassword) {
     errors.push("Please enter a matching password.");
-  } else if (
-    request.password &&
-    request.password.localeCompare(request.matchingPassword) !== 0
-  ) {
+  } else if (request.password && request.password.localeCompare(request.matchingPassword) !== 0) {
     errors.push("Passwords do not match.");
   }
   return errors;

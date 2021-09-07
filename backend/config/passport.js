@@ -1,14 +1,13 @@
+const fs = require("fs");
+const path = require("path");
 const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const fs = require("fs");
-const path = require("path");
-const keys = require("./keys");
 const User = require("mongoose").model("User");
 const Provider = require("../util/enums").provider;
 
-const publicKeyPath = path.join(__dirname, "..", keys.publicKey);
+const publicKeyPath = path.join(__dirname, "..", process.env.PUBLIC_KEY_PATH);
 
 const jwtStrategy = new JwtStrategy(
   {
@@ -24,8 +23,7 @@ const jwtStrategy = new JwtStrategy(
       if (!err) {
         err = {
           status: 401,
-          message:
-            "The token provided corresponds to a user that doesn't exist",
+          message: "The token provided corresponds to a user that doesn't exist",
         };
       }
       return done(err, false);
@@ -35,9 +33,9 @@ const jwtStrategy = new JwtStrategy(
 
 const facebookStrategy = new FacebookStrategy(
   {
-    clientID: keys.facebook.clientId,
-    clientSecret: keys.facebook.clientSecret,
-    callbackURL: keys.facebook.callbackUrl,
+    clientID: process.env.FACEBOOK_CLIENTID,
+    clientSecret: process.env.FACEBOOK_SECRET,
+    callbackURL: process.env.FACEBOOK_CALLBACK_URL,
     profileFields: ["name", "photos", "email"],
   },
   function (accessToken, refreshToken, facebookProfile, done) {
@@ -61,9 +59,7 @@ const facebookStrategy = new FacebookStrategy(
           return done(err, false);
         }
         if (newUser) {
-          console.log(
-            `Successfully signed up new Facebook user: ${newUser.email}.`
-          );
+          console.log(`Successfully signed up new Facebook user: ${newUser.email}.`);
         }
         return done(err, savedUser);
       });
