@@ -44,7 +44,6 @@ app.use(morgan(":date: HTTP :method -> :url -> :response-time -> :remote-addr"))
 app.use("", require("./routes/index.routes"));
 app.use("/auth", require("./routes/auth.routes"));
 app.use(`/${process.env.APP_CONTEXT}/admin`, require("./routes/admin.routes"));
-app.use(`/${process.env.APP_CONTEXT}/users`, require("./routes/user.routes"));
 
 // Error handler
 const errorHandler = require("./util/error-handler.js");
