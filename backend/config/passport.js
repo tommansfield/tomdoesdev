@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const passport = require("passport");
 const FacebookStrategy = require("passport-facebook").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const User = require("mongoose").model("User");
@@ -33,8 +34,8 @@ const jwtStrategy = new JwtStrategy(
 
 const facebookStrategy = new FacebookStrategy(
   {
-    clientID: process.env.FACEBOOK_CLIENTID,
-    clientSecret: process.env.FACEBOOK_SECRET,
+    clientID: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     callbackURL: process.env.FACEBOOK_CALLBACK_URL,
     profileFields: ["name", "photos", "email"],
   },
@@ -67,6 +68,41 @@ const facebookStrategy = new FacebookStrategy(
   }
 );
 
+const googleStrategy = new GoogleStrategy(
+  {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+  },
+  function (request, accessToken, refreshToken, profile, done) {
+    if (!profile.emails) {
+      const error = "No email address was provided by Facebook";
+      return done(error, null);
+    }
+    const email = profile.emails[0].value;
+    let newUser = false;
+    User.findOne({ email }, (err, user) => {
+      if (err) {
+        next(err);
+      }
+      if (!user) {
+        newUser = true;
+        user = new User({ email });
+        user.profile = extractUserProfile(profile);
+      }
+      user.save((err, savedUser) => {
+        if (err) {
+          return done(err, false);
+        }
+        if (newUser) {
+          console.log(`Successfully signed up new Facebook user: ${newUser.email}.`);
+        }
+        return done(err, savedUser);
+      });
+    });
+  }
+);
+
 const extractUserProfile = function (profile) {
   return {
     firstName: profile.name.givenName,
@@ -77,5 +113,6 @@ const extractUserProfile = function (profile) {
 
 passport.use(Provider.LOCAL, jwtStrategy);
 passport.use(Provider.FACEBOOK, facebookStrategy);
+passport.use(Provider.GOOGLE, googleStrategy);
 
 module.exports = passport;

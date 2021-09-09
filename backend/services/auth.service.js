@@ -86,6 +86,11 @@ module.exports.redirectTo = (provider) => {
         scope: ["email", "public_profile"],
       });
     }
+    case Provider.GOOGLE: {
+      return passport.authenticate(Provider.GOOGLE, {
+        scope: ["email", "profile"],
+      });
+    }
     default:
       return (req, res, next) => {
         const error = {
