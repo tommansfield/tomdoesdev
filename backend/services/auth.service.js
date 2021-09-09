@@ -54,6 +54,38 @@ module.exports.login = (req, res, next) => {
   });
 };
 
+module.exports.createOrUpdateSocialUser = function (socialInfo, done) {
+  if (!socialInfo.profile.emails) {
+    const err = `No email address was provided by ${socialInfo.provider}`;
+    return done(err, null);
+  }
+  const email = socialInfo.profile.emails[0].value;
+  let newUser = false;
+  User.findOne({ email }, (err, user) => {
+    if (err) {
+      return done(err, false);
+    }
+    if (!user) {
+      newUser = true;
+      user = new User({ email });
+      user.profile = {
+        firstName: socialInfo.profile.name.givenName,
+        lastName: socialInfo.profile.name.familyName,
+        photoUrl: socialInfo.profile.photos[0].value,
+      };
+    }
+    user.save((err, savedUser) => {
+      if (err) {
+        return done(err, false);
+      }
+      if (newUser) {
+        console.log(`Successfully signed up new ${socialInfo.provider} user: ${savedUser.email}.`);
+      }
+      return done(err, savedUser);
+    });
+  });
+};
+
 const authenticate = (req, res, next) => {
   passport.authenticate(Provider.LOCAL, { session: false })(req, res, next);
 };
