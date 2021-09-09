@@ -1,7 +1,7 @@
 const User = require("mongoose").model("User");
 const Role = require("mongoose").model("Role");
 const crypto = require("../auth/crypto");
-const provider = require("../util/enums").provider;
+const Provider = require("../util/enums").provider;
 
 module.exports.getUsers = (_, res) => {
   User.find({}, (err, users) => {
@@ -29,7 +29,7 @@ module.exports.getUserById = (req, res, next) => {
 module.exports.createUser = (req, res, next) => {
   existsByEmail(req, res, () => {
     const user = new User(req.body);
-    user.provider = provider.ADMIN;
+    user.provider = Provider.ADMIN;
     user.save((err, user) => {
       if (err) {
         return next(err);
@@ -106,11 +106,11 @@ module.exports.createAdminUser = (next) => {
 const existsByEmail = (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, user) => {
     if (user && user._id !== req.body._id) {
-      let error = "Email address already registered";
-      if (provider.LOCAL.localeCompare(user.provider) === 0 || provider.ADMIN.localeCompare(user.provider) === 0) {
-        error = `${error}.`;
-      } else {
-        error = `${error} using ${user.provider}`;
+      let error = `Email address already registered.`;
+      if (Provider.ADMIN.localeCompare(user.provider) === 0) {
+        error = `${error} Please contact an administrator.`;
+      } else if (Provider.LOCAL.localeCompare(user.provider) !== 0) {
+        error = `${error} Please log in using ${user.provider}.`;
       }
       return res.status(400).json({ error });
     }

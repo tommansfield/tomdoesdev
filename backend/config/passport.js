@@ -4,8 +4,10 @@ const passport = require("passport");
 const authService = require("../services/auth.service");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const GithubStrategy = require("passport-github2").Strategy;
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
+
 const User = require("mongoose").model("User");
 
 const Provider = require("../util/enums").provider;
@@ -59,8 +61,21 @@ const googleStrategy = new GoogleStrategy(
   }
 );
 
+const githubStrategy = new GithubStrategy(
+  {
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: process.env.GITHUB_CALLBACK_URL,
+  },
+  (accessToken, refreshToken, profile, done) => {
+    const provider = Provider.GITHUB;
+    authService.createOrUpdateSocialUser({ profile, provider }, done);
+  }
+);
+
 passport.use(Provider.LOCAL, jwtStrategy);
 passport.use(Provider.FACEBOOK, facebookStrategy);
 passport.use(Provider.GOOGLE, googleStrategy);
+passport.use(Provider.GITHUB, githubStrategy);
 
 module.exports = passport;

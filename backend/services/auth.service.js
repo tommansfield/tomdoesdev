@@ -45,6 +45,10 @@ module.exports.login = (req, res, next) => {
       const error = `No user found for email address: ${req.body.email}.`;
       return res.status(401).json({ error });
     }
+    if (Provider.ADMIN.localeCompare(user.provider) !== 0 && Provider.LOCAL.localeCompare(user.provider) !== 0) {
+      const error = `Email address signed-up using ${user.provider}. Please log-in using ${user.provider}.`;
+      res.status(400).json({ error });
+    }
     const isValid = crypto.validPassword(req.body.password, user.hash, user.salt);
     if (!isValid) {
       res.status(401).json({ error: "Invalid password." });
@@ -68,9 +72,10 @@ module.exports.createOrUpdateSocialUser = function (socialInfo, done) {
     if (!user) {
       newUser = true;
       user = new User({ email });
+      user.provider = socialInfo.provider;
       user.profile = {
-        firstName: socialInfo.profile.name.givenName,
-        lastName: socialInfo.profile.name.familyName,
+        firstName: socialInfo.profile.name?.givenName || socialInfo.profile.displayName,
+        lastName: socialInfo.profile.name?.familyName,
         photoUrl: socialInfo.profile.photos[0].value,
       };
     }
@@ -121,6 +126,11 @@ module.exports.redirectTo = (provider) => {
     case Provider.GOOGLE: {
       return passport.authenticate(Provider.GOOGLE, {
         scope: ["email", "profile"],
+      });
+    }
+    case Provider.GITHUB: {
+      return passport.authenticate(Provider.GITHUB, {
+        scope: ["user:email", "user:name"],
       });
     }
     default:
