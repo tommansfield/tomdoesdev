@@ -5,6 +5,7 @@ const authService = require("../services/auth.service");
 const FacebookStrategy = require("passport-facebook").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GithubStrategy = require("passport-github2").Strategy;
+const TwitterStrategy = require("passport-twitter").Strategy;
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 
@@ -73,9 +74,23 @@ const githubStrategy = new GithubStrategy(
   }
 );
 
+const twitterStrategy = new TwitterStrategy(
+  {
+    consumerKey: process.env.TWITTER_CLIENT_ID,
+    consumerSecret: process.env.TWITTER_CLIENT_SECRET,
+    userProfileURL: process.env.TWITTER_PROFILE_URL,
+    callbackURL: process.env.TWITTER_CALLBACK_URL,
+  },
+  (token, tokenSecret, profile, done) => {
+    const provider = Provider.TWITTER;
+    authService.createOrUpdateSocialUser({ profile, provider }, done);
+  }
+);
+
 passport.use(Provider.LOCAL, jwtStrategy);
 passport.use(Provider.FACEBOOK, facebookStrategy);
 passport.use(Provider.GOOGLE, googleStrategy);
 passport.use(Provider.GITHUB, githubStrategy);
+passport.use(Provider.TWITTER, twitterStrategy);
 
 module.exports = passport;

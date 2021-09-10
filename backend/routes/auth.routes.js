@@ -14,6 +14,9 @@ router.get("/google/callback", authService.sendToken(Provider.GOOGLE));
 router.get("/github", authService.redirectTo(Provider.GITHUB));
 router.get("/github/callback", authService.sendToken(Provider.GITHUB));
 
+router.get("/twitter", authService.redirectTo(Provider.TWITTER));
+router.get("/twitter/callback", authService.sendToken(Provider.TWITTER));
+
 router.get("/user", authService.authenticate, (req, res) => {
   res.send(req.user);
 });

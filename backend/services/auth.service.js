@@ -63,22 +63,29 @@ module.exports.createOrUpdateSocialUser = function (socialInfo, done) {
     const err = `No email address was provided by ${socialInfo.provider}`;
     return done(err, null);
   }
+
   const email = socialInfo.profile.emails[0].value;
+  console.log(socialInfo);
   let newUser = false;
   User.findOne({ email }, (err, user) => {
     if (err) {
       return done(err, false);
     }
+    if (user && user.provider.localeCompare(socialInfo.provider) !== 0) {
+      const err = `Email address signed-up using ${user.provider}. Please log-in using ${user.provider}.`;
+      return done(err, null);
+    }
     if (!user) {
       newUser = true;
       user = new User({ email });
       user.provider = socialInfo.provider;
-      user.profile = {
-        firstName: socialInfo.profile.name?.givenName || socialInfo.profile.displayName,
-        lastName: socialInfo.profile.name?.familyName,
-        photoUrl: socialInfo.profile.photos[0].value,
-      };
     }
+    // TODO: split google and twitter names
+    user.profile = {
+      firstName: socialInfo.profile.name?.givenName || socialInfo.profile.displayName,
+      lastName: socialInfo.profile.name?.familyName,
+      photoUrl: socialInfo.profile.photos[0].value,
+    };
     user.save((err, savedUser) => {
       if (err) {
         return done(err, false);
@@ -132,6 +139,9 @@ module.exports.redirectTo = (provider) => {
       return passport.authenticate(Provider.GITHUB, {
         scope: ["user:email", "user:name"],
       });
+    }
+    case Provider.TWITTER: {
+      return passport.authenticate(Provider.TWITTER);
     }
     default:
       return (req, res, next) => {

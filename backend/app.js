@@ -15,6 +15,18 @@ dotenvExpand(dotenv.config());
 const Environment = require("./util/enums").environment;
 const env = process.env.APP_ENV || Environment.DEV;
 
+// Session (for twitter login)
+const session = require("express-session");
+const oneDay = 1000 * 60 * 60 * 24;
+app.use(
+  session({
+    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    saveUninitialized: true,
+    cookie: { maxAge: oneDay },
+    resave: false,
+  })
+);
+
 // MongoDB
 const mongoose = require("./config/mongoose");
 
