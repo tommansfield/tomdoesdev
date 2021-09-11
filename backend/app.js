@@ -20,7 +20,7 @@ const session = require("express-session");
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(
   session({
-    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    secret: process.env.APP_NAME.toLowerCase(),
     saveUninitialized: true,
     cookie: { maxAge: oneDay },
     resave: false,
@@ -33,6 +33,10 @@ const mongoose = require("./config/mongoose");
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Cookie Parser
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 // Keypair creator
 const crypto = require("./auth/crypto");

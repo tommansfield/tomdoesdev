@@ -63,9 +63,7 @@ module.exports.createOrUpdateSocialUser = function (socialInfo, done) {
     const err = `No email address was provided by ${socialInfo.provider}`;
     return done(err, null);
   }
-
   const email = socialInfo.profile.emails[0].value;
-  console.log(socialInfo);
   let newUser = false;
   User.findOne({ email }, (err, user) => {
     if (err) {
@@ -80,12 +78,7 @@ module.exports.createOrUpdateSocialUser = function (socialInfo, done) {
       user = new User({ email });
       user.provider = socialInfo.provider;
     }
-    // TODO: split google and twitter names
-    user.profile = {
-      firstName: socialInfo.profile.name?.givenName || socialInfo.profile.displayName,
-      lastName: socialInfo.profile.name?.familyName,
-      photoUrl: socialInfo.profile.photos[0].value,
-    };
+    user.profile = extractUserInfo(socialInfo);
     user.save((err, savedUser) => {
       if (err) {
         return done(err, false);
@@ -98,8 +91,41 @@ module.exports.createOrUpdateSocialUser = function (socialInfo, done) {
   });
 };
 
+const extractUserInfo = (socialInfo) => {
+  const profile = {};
+  if (
+    Provider.GITHUB.localeCompare(socialInfo.provider) === 0 ||
+    Provider.TWITTER.localeCompare(socialInfo.provider) === 0
+  ) {
+    const displayName = socialInfo.profile?.displayName;
+    profile.firstName = displayName?.split(" ")[0] || displayName;
+    profile.lastName = displayName?.split(" ")[1];
+  } else {
+    profile.firstName = socialInfo.profile.name?.givenName || socialInfo.profile.displayName;
+    profile.lastName = socialInfo.profile.name?.familyName;
+  }
+  profile.photoUrl = socialInfo.profile.photos[0]?.value;
+  return profile;
+};
+
 const authenticate = (req, res, next) => {
   passport.authenticate(Provider.LOCAL, { session: false })(req, res, next);
+};
+
+module.exports.sendToken = (provider) => {
+  return (req, res, next) => {
+    passport.authenticate(provider || Provider.LOCAL, { session: false }, (err, user) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      if (user) {
+        return signJWTToken(user, res);
+      } else {
+        const error = "Unable to retrieve user information.";
+        res.status(401).json({ error });
+      }
+    })(req, res, next);
+  };
 };
 
 module.exports.authenticate = authenticate;
@@ -154,22 +180,6 @@ module.exports.redirectTo = (provider) => {
   }
 };
 
-module.exports.sendToken = (provider) => {
-  return (req, res, next) => {
-    passport.authenticate(provider || Provider.LOCAL, { session: false }, (err, user) => {
-      if (err) {
-        return res.status(401).json({ error: err });
-      }
-      if (user) {
-        return signJWTToken(user, res);
-      } else {
-        const error = "Unable to retrieve user information.";
-        res.status(401).json({ error });
-      }
-    })(req, res, next);
-  };
-};
-
 const signJWTToken = function (user, res) {
   const _id = user._id;
   const expiresIn = user.settings.rememberMe ? "1y" : "2h";
@@ -178,11 +188,7 @@ const signJWTToken = function (user, res) {
     expiresIn,
     algorithm: "RS256",
   });
-  return res.json({
-    user,
-    token: token,
-    expiresIn: expiresIn,
-  });
+  return res.json({ user, token: token, expiresIn: expiresIn });
 };
 
 const validateLogin = function (request) {
