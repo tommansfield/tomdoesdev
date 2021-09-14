@@ -1,1 +1,30 @@
-<p>login works!</p>
+<h4>Login!</h4>
+
+<button type="button" (click)="isRegister = false">Log In</button>
+<button type="button" (click)="isRegister = true">Register</button>
+<form>
+  <input type="text" placeholder="email" name="email" [(ngModel)]="email" />
+  <input
+    type="password"
+    placeholder="password"
+    name="password"
+    [(ngModel)]="password"
+  />
+  <input
+    *ngIf="isRegister"
+    type="password"
+    placeholder="confirm password"
+    name="confirmPassword"
+    [(ngModel)]="confirmPassword"
+  />
+  <button type="button" (click)="isRegister ? register() : login()">
+    Log In
+  </button>
+</form>
+<hr />
+<ul>
+  <li><a href="{{ facebookUrl }}">Facebook</a></li>
+  <li><a href="{{ googleUrl }}">Google</a></li>
+  <li><a href="{{ githubUrl }}">Github</a></li>
+  <li><a href="{{ twitterUrl }}">Twitter</a></li>
+</ul>

@@ -9,6 +9,7 @@ const userService = require("./user.service");
 const Provider = require("../util/enums").provider;
 const Constants = require("../util/constants");
 const privateKeyPath = path.join(__dirname, "..", process.env.PRIVATE_KEY_PATH);
+const frontEndCallbackUrl = `${process.env.FRONTEND_APP_URL}/callback`;
 
 module.exports.register = (req, res, next) => {
   const errors = validateRegistration(req.body);
@@ -27,7 +28,8 @@ module.exports.register = (req, res, next) => {
         return next(err);
       }
       console.log(`Successfully signed up new user: ${newUser.email}.`);
-      signJWTToken(newUser, res);
+      const token = signJWTToken(newUser);
+      res.json({ token: token.token, expiresIn: token.expiresIn });
     });
   });
 };
@@ -53,7 +55,8 @@ module.exports.login = (req, res, next) => {
     if (!isValid) {
       res.status(401).json({ error: "Invalid password." });
     } else {
-      signJWTToken(user, res);
+      const token = signJWTToken(user);
+      res.json({ token: token.token, expiresIn: token.expiresIn });
     }
   });
 };
@@ -119,7 +122,10 @@ module.exports.sendToken = (provider) => {
         return res.status(401).json({ error: err });
       }
       if (user) {
-        return signJWTToken(user, res);
+        const token = signJWTToken(user);
+        res.cookie("token", token.token);
+        res.cookie("expiresIn", token.expiresIn);
+        return res.clearCookie("connect.sid", { path: "/" }).redirect(frontEndCallbackUrl);
       } else {
         const error = "Unable to retrieve user information.";
         res.status(401).json({ error });
@@ -180,7 +186,7 @@ module.exports.redirectTo = (provider) => {
   }
 };
 
-const signJWTToken = function (user, res) {
+const signJWTToken = function (user) {
   const _id = user._id;
   const expiresIn = user.settings.rememberMe ? "1y" : "2h";
   const payload = { sub: _id, iat: Date.now() };
@@ -188,7 +194,7 @@ const signJWTToken = function (user, res) {
     expiresIn,
     algorithm: "RS256",
   });
-  return res.json({ user, token: token, expiresIn: expiresIn });
+  return { token: token, expiresIn: expiresIn };
 };
 
 const validateLogin = function (request) {
@@ -228,9 +234,9 @@ const validateRegistration = function (request) {
   } else if (!Constants.validation.numbers.test(request.password)) {
     errors.push("Password should contain at least one number.");
   }
-  if (!request.matchingPassword) {
+  if (!request.confirmPassword) {
     errors.push("Please enter a matching password.");
-  } else if (request.password && request.password.localeCompare(request.matchingPassword) !== 0) {
+  } else if (request.password && request.password.localeCompare(request.confirmPassword) !== 0) {
     errors.push("Passwords do not match.");
   }
   return errors;

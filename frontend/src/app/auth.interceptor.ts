@@ -14,8 +14,8 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const token = localStorage.get('token');
-    const expiresIn = localStorage.get('expiryDate');
+    const token = localStorage.getItem('token');
+    const expiresIn = localStorage.getItem('expiryDate');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     const clonedRequest = req.clone({ headers });
     return next.handle(clonedRequest);
