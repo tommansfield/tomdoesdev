@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,8 +18,9 @@ export class LoginComponent implements OnInit {
   public email: string;
   public password: string;
   public confirmPassword: string;
+  private homeUrl = '/';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -27,8 +29,8 @@ export class LoginComponent implements OnInit {
       .login({ email: this.email, password: this.password })
       .subscribe(
         (token) => {
-          console.log(token);
           this.authService.setLocalStorage(token);
+          this.router.navigate([this.homeUrl]);
         },
         (err) => {
           console.error(err.error);
@@ -45,7 +47,9 @@ export class LoginComponent implements OnInit {
       })
       .subscribe(
         (token) => {
+          token.user = btoa(JSON.stringify(token.user));
           this.authService.setLocalStorage(token);
+          this.router.navigate([this.homeUrl]);
         },
         (err) => {
           console.error(err.error);

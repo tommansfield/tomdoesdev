@@ -1,0 +1,6 @@
+<h4>{{ appName }}</h4>
+<h5>
+  Welcome<span *ngIf="(user | async)?.profile?.firstName"
+    >&nbsp;{{ (user | async).profile.firstName }}</span
+  >!
+</h5>

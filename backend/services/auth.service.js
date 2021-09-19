@@ -22,6 +22,9 @@ module.exports.register = (req, res, next) => {
       email: req.body.email,
       hash: saltHash.hash,
       salt: saltHash.salt,
+      settings: {
+        rememberMe: req.body.rememberMe | true,
+      },
     });
     user.save((err, newUser) => {
       if (err) {
@@ -29,7 +32,7 @@ module.exports.register = (req, res, next) => {
       }
       console.log(`Successfully signed up new user: ${newUser.email}.`);
       const token = signJWTToken(newUser);
-      res.json({ token: token.token, expiresIn: token.expiresIn });
+      res.json({ token: token.token, expiresIn: token.expiresIn, user: updatedUser });
     });
   });
 };
@@ -55,8 +58,14 @@ module.exports.login = (req, res, next) => {
     if (!isValid) {
       res.status(401).json({ error: "Invalid password." });
     } else {
-      const token = signJWTToken(user);
-      res.json({ token: token.token, expiresIn: token.expiresIn });
+      user.settings.rememberMe = req.body.rememberMe | true;
+      user.save((err, updatedUser) => {
+        if (err) {
+          return next(err);
+        }
+        const token = signJWTToken(updatedUser);
+        res.json({ token: token.token, expiresIn: token.expiresIn, user: updatedUser });
+      });
     }
   });
 };
@@ -125,6 +134,7 @@ module.exports.sendToken = (provider) => {
         const token = signJWTToken(user);
         res.cookie("token", token.token);
         res.cookie("expiresIn", token.expiresIn);
+        res.cookie("user", JSON.stringify(user));
         return res.clearCookie("connect.sid", { path: "/" }).redirect(frontEndCallbackUrl);
       } else {
         const error = "Unable to retrieve user information.";
@@ -132,6 +142,17 @@ module.exports.sendToken = (provider) => {
       }
     })(req, res, next);
   };
+};
+
+const signJWTToken = function (user) {
+  const _id = user._id;
+  const expiresIn = user.settings.rememberMe ? "1y" : "1m";
+  const payload = { sub: _id };
+  const token = jsonwebtoken.sign(payload, fs.readFileSync(privateKeyPath), {
+    expiresIn,
+    algorithm: "RS256",
+  });
+  return { token, expiresIn };
 };
 
 module.exports.authenticate = authenticate;
@@ -184,17 +205,6 @@ module.exports.redirectTo = (provider) => {
         next(error);
       };
   }
-};
-
-const signJWTToken = function (user) {
-  const _id = user._id;
-  const expiresIn = user.settings.rememberMe ? "1y" : "2h";
-  const payload = { sub: _id, iat: Date.now() };
-  const token = jsonwebtoken.sign(payload, fs.readFileSync(privateKeyPath), {
-    expiresIn,
-    algorithm: "RS256",
-  });
-  return { token: token, expiresIn: expiresIn };
 };
 
 const validateLogin = function (request) {

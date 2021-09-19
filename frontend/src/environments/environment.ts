@@ -1,5 +1,5 @@
 export const environment = {
   appName: 'Tomdoesdev',
   production: false,
-  backendUrl: 'http://localhost:3000',
+  backendUrl: 'https://localhost:3000',
 };
