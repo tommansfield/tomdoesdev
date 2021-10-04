@@ -3,16 +3,18 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { catchError, first } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import * as dayjs from 'dayjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   public localUser: BehaviorSubject<any>;
-  public loginUrl = `${environment.backendUrl}/auth/login`;
-  public registerUrl = `${environment.backendUrl}/auth/register`;
+  private loginUrl = `${environment.backendUrl}/auth/login`;
+  private registerUrl = `${environment.backendUrl}/auth/register`;
+  private userUrl = `${environment.backendUrl}/auth/user`;
 
   constructor(
     private http: HttpClient,
@@ -25,11 +27,21 @@ export class AuthService {
   }
 
   login(login: any): Observable<any> {
-    return this.http.post(this.loginUrl, login).pipe(first());
+    return this.http
+      .post(this.loginUrl, login)
+      .pipe(first(), catchError(this.handleError<any>('login')));
   }
 
   register(register: any): Observable<any> {
-    return this.http.post(this.registerUrl, register).pipe(first());
+    return this.http
+      .post(this.registerUrl, register)
+      .pipe(first(), catchError(this.handleError<any>('register')));
+  }
+
+  getUser(): Observable<any> {
+    return this.http
+      .get(this.userUrl)
+      .pipe(first(), catchError(this.handleError<any>('getUser')));
   }
 
   getToken(): any {
@@ -40,8 +52,8 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    const token: string | null = localStorage.getItem('token');
-    const expiresIn: string | null = localStorage.getItem('expiresIn');
+    const token: string | null = localStorage.getItem('token') || '';
+    const expiresIn: string = localStorage.getItem('expiresIn') || '';
     const user: any = localStorage.getItem('user');
     const tokenisValid: boolean = this.validateToken(expiresIn);
     return user && token !== 'undefined' && tokenisValid;
@@ -58,24 +70,41 @@ export class AuthService {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('expiresIn');
-    this.localUser.next(null);
+    this.localUser.next('undefined');
   }
 
   transformCookies(): void {
-    const user = JSON.parse(this.cookieService.get('user'));
+    const userJson = this.cookieService.get('user');
+    const user = userJson === '' ? null : JSON.parse(userJson);
     const token = this.cookieService.get('token');
     const expiresIn = this.cookieService.get('expiresIn');
     this.cookieService.deleteAll();
-    if (!token || !expiresIn) {
+    if (!token || !expiresIn || !user) {
       this.logout();
+      this.router.navigate(['/login']);
     } else {
       this.setLocalStorage({ user, token, expiresIn });
-      this.router.navigate(['/']);
+      this.router.navigate(['/user']);
     }
   }
 
-  validateToken(expiresIn: string | null): boolean {
-    // TODO: Validate token time
+  validateToken(expiresIn: string): boolean {
+    console.log('now: ' + dayjs());
+    console.log('');
+    console.log(dayjs().format(expiresIn));
     return true;
+  }
+
+  private handleError<T>(operation = 'operation'): any {
+    return (res: any): Observable<T> => {
+      if (res.status === 401) {
+        this.logout();
+        this.router.navigate(['/login']);
+      } else if (res.status === 403) {
+        this.router.navigate(['/']);
+      }
+      console.error('Error: ' + res.error.error);
+      return of();
+    };
   }
 }
