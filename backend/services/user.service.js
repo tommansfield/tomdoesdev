@@ -27,7 +27,7 @@ module.exports.getUserById = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  existsByEmail(req, res, () => {
+  verifyEmailAvailable(req, res, () => {
     const user = new User(req.body);
     user.provider = Provider.ADMIN;
     user.save((err, user) => {
@@ -40,17 +40,15 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  existsByEmail(req, res, () => {
-    User.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, user) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        const error = `No user found with id: ${req.params.id}`;
-        return res.status(404).json({ error });
-      }
-      res.status(200).send(user);
-    });
+  User.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      const error = `No user found with id: ${req.params.id}`;
+      return res.status(404).json({ error });
+    }
+    res.status(200).send(user);
   });
 };
 
@@ -103,7 +101,7 @@ module.exports.createAdminUser = (next) => {
   });
 };
 
-const existsByEmail = (req, res, next) => {
+const verifyEmailAvailable = (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, user) => {
     if (user && user._id !== req.body._id) {
       let error = `Email address already registered.`;
@@ -118,4 +116,4 @@ const existsByEmail = (req, res, next) => {
   });
 };
 
-module.exports.existsByEmail = existsByEmail;
+module.exports.verifyEmailAvailable = verifyEmailAvailable;

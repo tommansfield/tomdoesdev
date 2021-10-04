@@ -16,7 +16,7 @@ module.exports.register = (req, res, next) => {
   if (errors.length) {
     return res.status(400).json({ errors });
   }
-  userService.existsByEmail(req, res, () => {
+  userService.verifyEmailAvailable(req, res, () => {
     const saltHash = crypto.generateSaltAndHash(req.body.password);
     const user = new User({
       email: req.body.email,

@@ -9,10 +9,9 @@
     "prod": "node app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Thomas Mansfield",
   "license": "ISC",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -24,7 +23,6 @@
     "mongoose": "^6.0.4",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
-    "passport-azure-ad": "^4.3.1-beta.0",
     "passport-facebook": "^3.0.0",
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",

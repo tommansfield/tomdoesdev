@@ -56,8 +56,6 @@ const User = mongoose.model("User", UserSchema);
 User.adminUser = new User({
   _id: new mongoose.mongo.ObjectId("6120f9e95fe7c26cb4c26d1c"),
   email: `admin@${process.env.APP_NAME.toLocaleLowerCase()}.com`,
-  hash: "",
-  salt: "",
   roles: [Role.ADMIN, Role.USER],
   profile: {
     firstName: "Admin",
