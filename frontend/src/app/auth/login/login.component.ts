@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   public email: string;
   public password: string;
   public confirmPassword: string;
-  private homeUrl = '/';
+  private loggedInUrl = '/user';
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
       .subscribe(
         (token) => {
           this.authService.setLocalStorage(token);
-          this.router.navigate([this.homeUrl]);
+          this.router.navigate([this.loggedInUrl]);
         },
         (err) => {
           console.error(err.error);
@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
         (token) => {
           token.user = btoa(JSON.stringify(token.user));
           this.authService.setLocalStorage(token);
-          this.router.navigate([this.homeUrl]);
+          this.router.navigate([this.loggedInUrl]);
         },
         (err) => {
           console.error(err.error);

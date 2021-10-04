@@ -1,0 +1,9 @@
+<h3>{{ appName }}</h3>
+<h4>
+  Welcome<span *ngIf="(user | async)?.profile?.firstName"
+    >&nbsp;{{ (user | async).profile.firstName }}</span
+  >!
+</h4>
+<button *ngIf="(user | async) !== 'undefined'" type="button" routerLink="/user">
+  User
+</button>

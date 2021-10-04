@@ -8,8 +8,9 @@ import { AuthService } from './services/auth.service';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { CallbackComponent } from './auth/callback/callback.component';
-import { HomeComponent } from './core/home/home.component';
-import { NavComponent } from './core/nav/nav.component';
+import { HomeComponent } from './core/components/home/home.component';
+import { NavComponent } from './core/components/nav/nav.component';
+import { UserComponent } from './auth/user/user.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { NavComponent } from './core/nav/nav.component';
     CallbackComponent,
     HomeComponent,
     NavComponent,
+    UserComponent,
   ],
   imports: [
     BrowserModule,

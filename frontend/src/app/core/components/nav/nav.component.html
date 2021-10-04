@@ -1,0 +1,10 @@
+<ul>
+  <li *ngIf="(user | async) === 'undefined'">
+    <a routerLink="/login">Log in</a>
+  </li>
+  <li *ngIf="(user | async) !== 'undefined'">
+    {{ (user | async).email }}
+    <a href="#" (click)="logout()">Log out</a>
+  </li>
+</ul>
+<hr />

@@ -32,7 +32,7 @@ module.exports.register = (req, res, next) => {
       }
       console.log(`Successfully signed up new user: ${newUser.email}.`);
       const token = signJWTToken(newUser);
-      res.json({ token: token.token, expiresIn: token.expiresIn, user: updatedUser });
+      res.json({ token: token.token, expiresIn: token.expiresIn, user: newUser });
     });
   });
 };
